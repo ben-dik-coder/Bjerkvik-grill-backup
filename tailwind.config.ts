@@ -11,16 +11,20 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        accent: "#ff8a00",
-        surface: "rgba(28, 28, 30, 0.72)",
-        "surface-solid": "#1c1c1e",
+        accent: "var(--accent)",
+        raised: "var(--raised)",
+        sunken: "var(--sunken)",
+        ink: "var(--ink)",
+        surface: "rgba(95, 80, 69, 0.72)",
+        "surface-solid": "var(--raised)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
       },
       boxShadow: {
-        card: "0 8px 32px rgba(0, 0, 0, 0.45)",
-        lift: "0 12px 40px rgba(0, 0, 0, 0.55)",
+        card: "0 8px 28px rgba(45, 30, 22, 0.38)",
+        lift: "0 14px 40px rgba(35, 22, 16, 0.42)",
       },
       borderRadius: {
         "4xl": "2rem",

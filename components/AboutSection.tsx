@@ -7,41 +7,41 @@ import { SITE } from "@/lib/constants";
 
 export function AboutSection() {
   return (
-    <section id="om" className="mx-auto max-w-6xl px-4 py-12 md:px-8">
+    <section id="om" className="mx-auto max-w-6xl px-4 py-8 md:px-8">
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="overflow-hidden rounded-3xl bg-surface-solid/95 p-4 shadow-card ring-1 ring-white/[0.06] backdrop-blur-md md:flex md:gap-8 md:p-6 lg:p-8"
+        className="overflow-hidden rounded-3xl bg-raised p-4 shadow-card ring-1 ring-accent/10 md:flex md:gap-6 md:p-5 lg:p-6"
       >
-        <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-2xl bg-black md:aspect-auto md:w-[44%] md:min-h-[280px]">
+        <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-2xl bg-black md:w-[44%] md:self-start">
           <Image
-            src="/images/vogn.png"
-            alt="Bjerkvik Grill"
+            src="/images/ute.jpg"
+            alt="Bjerkvik Grill — utendørs"
             fill
-            className="object-cover object-center"
+            className="object-cover object-center md:object-contain"
             sizes="(max-width: 768px) 100vw, 40vw"
             unoptimized
           />
         </div>
-        <div className="mt-5 flex flex-1 flex-col justify-center md:mt-0">
+        <div className="mt-4 flex flex-1 flex-col justify-center md:mt-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-accent/90">
             {SITE.category}
           </p>
-          <h2 className="mt-2 text-2xl font-bold leading-tight text-white md:text-3xl">
-            Lokal street food{" "}
-            <span className="text-accent italic">med lidenskap</span>
+          <h2 className="font-serif mt-2 text-2xl font-semibold leading-tight text-[#f5f0e8] md:text-3xl">
+            Lokalt kjøkken{" "}
+            <span className="text-accent italic">med ambisjoner</span>
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-white/75">
+          <p className="mt-3 text-[15px] leading-relaxed text-[#d7cfc4]/85">
             {SITE.tagline}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/70">
+          <p className="mt-3 text-[15px] leading-relaxed text-[#d7cfc4]/78">
             {SITE.signature}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/65">
+          <p className="mt-3 text-[15px] leading-relaxed text-[#d7cfc4]/70">
             {SITE.aboutExtra}
           </p>
-          <p className="mt-6 flex items-center gap-2 text-sm font-medium text-accent">
+          <p className="mt-4 flex items-center gap-2 text-sm font-medium text-accent">
             <Heart className="h-4 w-4 fill-accent text-accent" />
             Laget med kjærlighet i Bjerkvik
           </p>

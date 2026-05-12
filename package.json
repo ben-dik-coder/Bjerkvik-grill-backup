@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NEXT_DEV_CACHE=1 next dev --turbopack -p 3002",
+    "dev:lan": "cross-env NEXT_DEV_CACHE=1 next dev --turbopack -p 3002 --hostname 0.0.0.0",
     "dev:webpack": "cross-env NEXT_DEV_CACHE=1 next dev -p 3002",
     "dev:clean": "rm -rf .next-dev && cross-env NEXT_DEV_CACHE=1 next dev --turbopack -p 3002",
     "clean": "rm -rf .next .next-dev",

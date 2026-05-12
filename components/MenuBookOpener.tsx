@@ -272,7 +272,7 @@ export function MenuBookProvider({ children }: { children: ReactNode }) {
                   }}
                   transition={COVER_SPRING}
                 >
-                  <div className="relative flex h-full w-full flex-col overflow-hidden border-r border-amber-950/60 shadow-[28px_0_100px_rgba(0,0,0,0.94),0_0_60px_rgba(255,120,40,0.06)]">
+                  <div className="relative flex h-full w-full flex-col overflow-hidden border-r border-amber-950/60 shadow-[28px_0_100px_rgba(0,0,0,0.94),0_0_60px_rgba(201,162,39,0.07)]">
                     {/* Bunn */}
                     <div className="absolute inset-0 bg-[#0e0c0a]" />
                     <div className="absolute inset-0 bg-gradient-to-br from-[#524a46]/98 via-[#221f1c] to-[#030201]" />

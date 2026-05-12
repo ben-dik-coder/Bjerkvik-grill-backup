@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #f5f5f7;
-  --accent: #ff8a00;
+  /* Rustikk — ler, brent tre, messing (varmere og mer «slitt» enn ren gråbrun) */
+  --background: #4a3c33;
+  --foreground: #faf3e8;
+  --accent: #b8893d;
+  --raised: #5f5045;
+  --sunken: #544539;
+  --ink: #3d2e24;
 }
 
 html {

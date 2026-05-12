@@ -1,24 +1,32 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Beef, Fish, Pizza, Sparkles } from "lucide-react";
+import { Beef, Fish, Pizza } from "lucide-react";
 import { IMG } from "@/lib/constants";
 
 const cats = [
   { key: "burger", label: "Burgere", img: IMG.burgerCat, Icon: Beef },
   { key: "sushi", label: "Sushi", img: IMG.sushiCat, Icon: Fish },
   { key: "pizza", label: "Pizza", img: IMG.pizzaCat, Icon: Pizza },
-  { key: "combo", label: "Combo", img: IMG.comboCat, Icon: Sparkles },
 ] as const;
 
 export function MenuCategories() {
   return (
     <section id="meny" className="mx-auto max-w-6xl px-4 py-12 md:px-8">
-      <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
-        Utforsk menyen
-      </h2>
-      <div className="no-scrollbar -mx-4 mt-6 flex gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-4 md:gap-5 md:overflow-visible md:px-0">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+        <h2 className="font-serif text-xs font-semibold uppercase tracking-[0.22em] text-[#d7cfc4]/90">
+          Utforsk menyen
+        </h2>
+        <Link
+          href="/meny"
+          className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/90 underline decoration-accent/35 underline-offset-4 transition hover:text-accent"
+        >
+          Hele menyen på én side
+        </Link>
+      </div>
+      <div className="no-scrollbar -mx-4 mt-6 flex gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0">
         {cats.map((c, i) => (
           <motion.button
             key={c.key}
@@ -38,7 +46,7 @@ export function MenuCategories() {
               className="object-cover transition duration-500 group-hover:scale-105"
               sizes="(max-width: 768px) 42vw, 25vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 pb-4 pt-8">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-accent ring-1 ring-accent/40 backdrop-blur-sm">
                 <c.Icon className="h-4 w-4" strokeWidth={2} />

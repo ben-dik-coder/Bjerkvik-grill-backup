@@ -27,26 +27,12 @@ function osloWeekdayAndMinutes(): { jsWeekday: number; minutes: number } {
   return { jsWeekday, minutes: hour * 60 + minute };
 }
 
-/** Åpning i minutter fra midnatt */
+/** Åpning i minutter fra midnatt — alle dager 12–21 (jf. Google Bedriftsprofil; helligdager ikke kodet). */
 function todaysWindow(
-  jsWeekday: number
+  _jsWeekday: number
 ): { open: number; close: number } | "closed" {
-  switch (jsWeekday) {
-    case 0:
-      return { open: 12 * 60, close: 21 * 60 };
-    case 1:
-      return "closed";
-    case 2:
-    case 3:
-    case 4:
-      return { open: 12 * 60, close: 20 * 60 };
-    case 5:
-      return { open: 11 * 60, close: 21 * 60 };
-    case 6:
-      return { open: 12 * 60, close: 21 * 60 };
-    default:
-      return "closed";
-  }
+  void _jsWeekday;
+  return { open: 12 * 60, close: 21 * 60 };
 }
 
 function fmtHm(mins: number): string {

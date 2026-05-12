@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Info, Star } from "lucide-react";
 import { REVIEWS, SITE } from "@/lib/constants";
+
+function parseRatingDisplay(s: string): number {
+  const n = Number(String(s).replace(",", "."));
+  return Number.isFinite(n) ? Math.min(5, Math.max(0, n)) : 0;
+}
 
 function GoogleMark() {
   return (
@@ -29,21 +34,70 @@ function GoogleMark() {
   );
 }
 
+function StarsRow({
+  value,
+  size = "md",
+}: {
+  value: number;
+  size?: "sm" | "md";
+}) {
+  const dim = size === "sm" ? "h-4 w-4" : "h-5 w-5";
+  const full = Math.floor(value);
+  const frac = value - full;
+
+  return (
+    <div
+      className="flex items-center gap-0.5"
+      aria-hidden
+      title={`${value} av 5`}
+    >
+      {Array.from({ length: 5 }).map((_, i) => {
+        if (i < full) {
+          return (
+            <Star key={i} className={`${dim} shrink-0 fill-accent text-accent`} />
+          );
+        }
+        if (i === full && frac > 0.04) {
+          return (
+            <span key={i} className={`relative shrink-0 overflow-hidden ${dim}`}>
+              <Star
+                className={`absolute inset-0 ${dim} fill-white/10 text-white/28`}
+              />
+              <span
+                className="absolute inset-y-0 left-0 overflow-hidden"
+                style={{ width: `${frac * 100}%` }}
+              >
+                <Star className={`${dim} fill-accent text-accent`} />
+              </span>
+            </span>
+          );
+        }
+        return (
+          <Star key={i} className={`${dim} shrink-0 fill-white/10 text-white/28`} />
+        );
+      })}
+    </div>
+  );
+}
+
 function ReviewCardContent({
   name,
   when,
   text,
   avatar,
+  stars,
 }: (typeof REVIEWS)[number]) {
+  const starCount = stars ?? 5;
   return (
     <>
-      <div className="mb-4 flex items-start gap-3">
+      <div className="mb-3 flex items-start gap-3">
         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full ring-2 ring-accent/40">
           <Image
             src={avatar}
             alt=""
             width={48}
             height={48}
+            unoptimized
             className="h-full w-full object-cover"
           />
         </div>
@@ -55,14 +109,8 @@ function ReviewCardContent({
             </div>
             <GoogleMark />
           </div>
-          <div className="mt-2 flex gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className="h-4 w-4 fill-accent text-accent"
-                aria-hidden
-              />
-            ))}
+          <div className="mt-2">
+            <StarsRow value={starCount} size="sm" />
           </div>
         </div>
       </div>
@@ -74,24 +122,49 @@ function ReviewCardContent({
 export function Reviews() {
   const [active, setActive] = useState(0);
   const r = REVIEWS[active];
+  const avgRating = useMemo(() => parseRatingDisplay(SITE.rating), []);
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10 md:px-8">
-      <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
-        Hva folk sier
-      </h2>
+    <section className="mx-auto max-w-6xl px-4 py-7 md:px-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
+            Hva folk sier
+          </h2>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/55">
+            Her er noen av tilbakemeldingene folk har lagt igjen på Google.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-2 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 sm:items-end sm:text-right">
+          <div className="flex items-center gap-3">
+            <span className="font-serif text-3xl font-semibold tabular-nums tracking-tight text-white">
+              {SITE.rating}
+            </span>
+            <StarsRow value={avgRating} />
+          </div>
+          <p className="text-sm text-white/55">
+            Basert på{" "}
+            <span className="font-semibold text-white/80">{SITE.reviewCount}</span>{" "}
+            anmeldelser på Google
+          </p>
+          <p className="flex items-center gap-1.5 text-[11px] text-white/35">
+            <Info className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            Google skriver at anmeldelser ikke er verifisert.
+          </p>
+        </div>
+      </div>
 
       {/* Mobil: ett kort med prikker */}
-      <div className="mt-6 md:hidden">
+      <div className="mt-4 md:hidden">
         <motion.div
           key={r.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden rounded-3xl bg-surface-solid/90 p-5 shadow-card ring-1 ring-white/[0.06] backdrop-blur-md"
+          className="overflow-hidden rounded-3xl bg-raised p-4 shadow-card ring-1 ring-white/[0.06]"
         >
           <ReviewCardContent {...r} />
-          <div className="mt-5 flex justify-center gap-2">
+          <div className="mt-4 flex justify-center gap-2">
             {REVIEWS.map((review, i) => (
               <button
                 key={review.id}
@@ -107,15 +180,15 @@ export function Reviews() {
         </motion.div>
       </div>
 
-      {/* PC / tablet: tre kolonner */}
-      <div className="mt-6 hidden gap-5 md:grid md:grid-cols-3">
+      {/* PC / tablet */}
+      <div className="mt-4 hidden gap-4 md:mx-auto md:grid md:max-w-4xl md:grid-cols-2">
         {REVIEWS.map((review) => (
           <motion.article
             key={review.id}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl bg-surface-solid/90 p-6 shadow-card ring-1 ring-white/[0.06] backdrop-blur-md"
+            className="rounded-3xl bg-raised p-5 shadow-card ring-1 ring-white/[0.06]"
           >
             <ReviewCardContent {...review} />
           </motion.article>
@@ -123,16 +196,14 @@ export function Reviews() {
       </div>
 
       <motion.a
-        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          SITE.name + " Bjerkvik"
-        )}`}
+        href={SITE.mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
         whileTap={{ scale: 0.99 }}
-        className="mt-6 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/40 py-3 text-sm font-bold uppercase tracking-wide text-accent backdrop-blur-md transition hover:bg-accent/10"
+        className="mt-4 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
       >
         <Star className="h-4 w-4 fill-accent text-accent" />
-        Se flere anmeldelser
+        Se alle {SITE.reviewCount} på Google
       </motion.a>
     </section>
   );

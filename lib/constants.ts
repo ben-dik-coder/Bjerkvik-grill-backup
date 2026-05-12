@@ -4,41 +4,41 @@ export const SITE = {
   category: "Grill / fast food",
   /** Prisindikasjon (eksempel) */
   priceRangeKr: "200–300",
-  /** Legg inn ekte telefon når dere har den */
-  phoneDisplay: "Se kontakt nedenfor",
-  phoneHref: "#kontakt",
-  /** Full gateadresse når dere er klare */
-  address: "Bjerkvik — adresse legges inn",
+  phoneDisplay: "91 92 31 41",
+  phoneHref: "tel:+4791923141",
+  address: "Maridalsveien 1, 8530 Bjerkvik",
   mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Bjerkvik+Norway",
+    "https://www.google.com/maps/search/?api=1&query=Maridalsveien+1,+8530+Bjerkvik,+Norway",
   /** Tekst på kart-marker (over kartet) */
-  mapPinLabel: "Bjerkvik",
-  instagram: "https://www.instagram.com/",
+  mapPinLabel: "Bjerkvik Grill",
+  instagram: "https://www.instagram.com/bjerkvikgrill/",
   instagramHandle: "@bjerkvikgrill",
-  rating: "4.9",
-  reviewCount: 12,
+  rating: "4,6",
+  reviewCount: 266,
   tagline:
-    "Vi ønsker deg velkommen til god mat og trivelig stemning ved sjøen i Bjerkvik.",
+    "Vi ønsker deg velkommen til god mat og trivelig stemning på Bjerkvik Grill.",
   signature:
     "Rettene tilberedes med omtanke — fordi gode måltider smaker best lokalt.",
   aboutExtra:
-    "Ny nettside for Bjerkvik Grill — oppdater adresse, åpningstider og bilder etter dere har det klart.",
+    "Du finner oss på Maridalsveien i Bjerkvik — ta gjerne kontakt eller kom innom.",
 } as const;
 
-/** Åpningstider — erstatt med faktiske tider */
+/** Åpningstider — som på Google Bedriftsprofil (helligdager kan avvike) */
 export const OPENING_WEEK = [
-  { day: "Mandag", hours: "Oppdateres" },
-  { day: "Tirsdag", hours: "Oppdateres" },
-  { day: "Onsdag", hours: "Oppdateres" },
-  { day: "Torsdag", hours: "Oppdateres" },
-  { day: "Fredag", hours: "Oppdateres" },
-  { day: "Lørdag", hours: "Oppdateres" },
-  { day: "Søndag", hours: "Oppdateres" },
+  { day: "Mandag", hours: "12–21" },
+  { day: "Tirsdag", hours: "12–21" },
+  { day: "Onsdag", hours: "12–21" },
+  { day: "Torsdag", hours: "12–21" },
+  { day: "Fredag", hours: "12–21" },
+  { day: "Lørdag", hours: "12–21" },
+  { day: "Søndag", hours: "12–21" },
 ] as const;
 
-/** Lokalt bilde: `public/images/hero.png` — bytt filer uten å endre denne konstanten */
+/** Lokale bilder under `public/images/` — bytt filer uten å endre konstantnavn */
 export const IMG = {
   hero: "/images/hero.png",
+  /** Brukt i forsiden (delt hero) */
+  hero1: "/images/hero1.png",
   burgerCat:
     "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=85&auto=format&fit=crop",
   sushiCat:
@@ -71,27 +71,21 @@ export const IMG = {
 
 export const REVIEWS = [
   {
-    id: "1",
-    name: "Ole L.",
-    when: "nylig",
-    text: "Kjempegod grillmat og bra service. Anbefaler å stikke innom!",
+    id: "courtney-fenton",
+    name: "Courtney Fenton",
+    when: "For 2 måneder siden · Lunsj · Google",
+    text: "Driving from our first accommodation on our trip to Norway to our second location, we stopped halfway for lunch at Bjerkvik Grill & Bar. We arrived shortly after they opened and were promptly seated. The waiter was extremely kind and …",
+    stars: 4,
     avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=128&q=80&auto=format&fit=crop",
+      "https://ui-avatars.com/api/?name=Courtney+Fenton&size=128&background=5c4a3d&color=ece7df&bold=true",
   },
   {
-    id: "2",
-    name: "Magnus R.",
-    when: "nylig",
-    text: "Saftige burgere og rask tilberedning — vi kommer tilbake.",
+    id: "erhan-aslan",
+    name: "Erhan Aslan",
+    when: "For 2 måneder siden · Google",
+    text: "It's always difficult to find nice restaurants especially at remote areas of Scandinavia including Lofoten. But when I found this restaurant with high ratings in Google, I was super happy. I was driving from Tromsø to Svolvær last year and …",
+    stars: 5,
     avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=128&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "3",
-    name: "Sara K.",
-    when: "nylig",
-    text: "Trivelig sted ved sjøen, god stemning.",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=128&q=80&auto=format&fit=crop",
+      "https://ui-avatars.com/api/?name=Erhan+Aslan&size=128&background=5c4a3d&color=ece7df&bold=true",
   },
 ] as const;

@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Home, BookOpen, Users, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 
 const nav = [
-  { id: "hjem", label: "Hjem", Icon: Home },
-  { id: "meny", label: "Meny", Icon: BookOpen },
-  { id: "om", label: "Om oss", Icon: Users },
-  { id: "kontakt", label: "Kontakt", Icon: Phone },
+  { id: "hjem", label: "Hjem", Icon: Home, href: "#hjem" as const },
+  { id: "meny", label: "Meny", Icon: BookOpen, href: "/meny" as const },
+  { id: "om", label: "Om oss", Icon: Users, href: "#om" as const },
+  { id: "kontakt", label: "Kontakt", Icon: Phone, href: "#kontakt" as const },
 ] as const;
 
 export function BottomNav() {
@@ -35,39 +36,54 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-black/55 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_32px_rgba(0,0,0,0.65)] backdrop-blur-xl"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-accent/10 bg-sunken pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_28px_rgba(45,30,22,0.35)]"
       aria-label="Hovednavigasjon"
     >
       <ul className="mx-auto flex max-w-lg justify-between px-6 md:px-8">
-        {nav.map(({ id, label, Icon }) => {
+        {nav.map(({ id, label, Icon, href }) => {
           const isOn = active === id;
+          const inner = (
+            <>
+              <motion.span
+                animate={{
+                  color: isOn ? "var(--accent)" : "rgba(250,243,232,0.55)",
+                }}
+                className="flex flex-col items-center gap-1"
+              >
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+                    isOn ? "bg-accent/15 ring-1 ring-accent/35" : ""
+                  }`}
+                >
+                  <Icon
+                    className="h-5 w-5"
+                    strokeWidth={isOn ? 2.5 : 2}
+                    aria-hidden
+                  />
+                </span>
+                {label}
+              </motion.span>
+            </>
+          );
           return (
             <li key={id}>
-              <a
-                href={`#${id}`}
-                onClick={() => setActive(id)}
-                className="flex flex-col items-center gap-1 py-1 text-[10px] font-semibold uppercase tracking-wide"
-              >
-                <motion.span
-                  animate={{
-                    color: isOn ? "#ff8a00" : "rgba(255,255,255,0.55)",
-                  }}
-                  className="flex flex-col items-center gap-1"
+              {href.startsWith("/") ? (
+                <Link
+                  href={href}
+                  onClick={() => setActive(id)}
+                  className="flex flex-col items-center gap-1 py-1 text-[10px] font-semibold uppercase tracking-wide"
                 >
-                  <span
-                    className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${
-                      isOn ? "bg-accent/15 ring-1 ring-accent/35" : ""
-                    }`}
-                  >
-                    <Icon
-                      className="h-5 w-5"
-                      strokeWidth={isOn ? 2.5 : 2}
-                      aria-hidden
-                    />
-                  </span>
-                  {label}
-                </motion.span>
-              </a>
+                  {inner}
+                </Link>
+              ) : (
+                <a
+                  href={href}
+                  onClick={() => setActive(id)}
+                  className="flex flex-col items-center gap-1 py-1 text-[10px] font-semibold uppercase tracking-wide"
+                >
+                  {inner}
+                </a>
+              )}
             </li>
           );
         })}

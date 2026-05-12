@@ -21,11 +21,11 @@ const shots = [IMG.ig1, IMG.ig2, IMG.ig3, IMG.ig4] as const;
 
 export function InstagramFeed() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+    <section className="mx-auto max-w-6xl px-4 py-6 md:px-8">
       <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
         Finn oss på Instagram
       </h2>
-      <div className="no-scrollbar -mx-4 mt-6 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0">
+      <div className="no-scrollbar -mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:px-0">
         {shots.map((src, i) => (
           <motion.div
             key={src}
@@ -33,16 +33,16 @@ export function InstagramFeed() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.06 }}
-            className="relative aspect-square w-[26vw] shrink-0 overflow-hidden rounded-2xl ring-1 ring-white/10 md:w-auto"
+            className="relative aspect-square w-[26vw] shrink-0 overflow-hidden rounded-2xl ring-1 ring-white/10 md:aspect-[4/5] md:w-auto"
           >
             <Image
               src={src}
               alt=""
               fill
-              className="object-cover"
+              className="object-cover object-center"
               sizes="(max-width: 768px) 26vw, 25vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </motion.div>
         ))}
       </div>
@@ -51,7 +51,7 @@ export function InstagramFeed() {
         target="_blank"
         rel="noopener noreferrer"
         whileTap={{ scale: 0.99 }}
-        className="mt-6 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/40 py-3 text-sm font-bold uppercase tracking-wide text-accent backdrop-blur-md transition hover:bg-accent/10"
+        className="mt-4 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
       >
         <InstagramGlyph className="h-4 w-4" />
         {SITE.instagramHandle}

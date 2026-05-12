@@ -68,21 +68,20 @@ export function LocationSection() {
   ];
 
   return (
-    <section id="kontakt" className="mx-auto max-w-6xl px-4 py-10 md:px-8">
+    <section id="kontakt" className="mx-auto max-w-6xl px-4 py-7 md:px-8">
       <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
         Finn oss
       </h2>
       <p className="mt-2 text-sm text-white/55">
-        Lokal grill ved sjøen i Bjerkvik — adresse, telefon og tider er listet
-        under.
+        Adresse, telefon og åpningstider — samme som på vår Google-profil.
       </p>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="mt-6 overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-lift"
+        className="mt-4 overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-lift"
       >
-        <div className="relative aspect-[16/11] w-full bg-zinc-900 md:aspect-[21/9]">
+        <div className="relative aspect-[16/11] w-full bg-zinc-900">
           <iframe
             title="Kart"
             src={mapEmbed}
@@ -98,7 +97,7 @@ export function LocationSection() {
         </div>
       </motion.div>
 
-      <ul className="mt-6 flex flex-col gap-5">
+      <ul className="mt-4 flex flex-col gap-4">
         {rows.map((row) => (
           <li key={row.id} className="flex gap-3 text-sm text-white/90">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-2xl bg-accent/12 text-accent ring-1 ring-accent/25">
@@ -114,7 +113,7 @@ export function LocationSection() {
         target="_blank"
         rel="noopener noreferrer"
         whileTap={{ scale: 0.99 }}
-        className="mt-8 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/40 py-3 text-sm font-bold uppercase tracking-wide text-accent backdrop-blur-md transition hover:bg-accent/10"
+        className="mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
       >
         <MapPin className="h-4 w-4" />
         Veibeskrivelse
