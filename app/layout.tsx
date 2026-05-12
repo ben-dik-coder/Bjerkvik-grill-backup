@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Inter, Manrope, Oswald } from "next/font/google";
 import "./globals.css";
 
 const serif = Cormorant_Garamond({
@@ -13,6 +13,20 @@ const sans = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const interCard = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-card",
   display: "swap",
 });
 
@@ -43,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="no">
       <body
-        className={`${sans.variable} ${serif.variable} m-0 min-h-screen bg-background p-0 font-sans antialiased text-foreground`}
+        className={`${sans.variable} ${serif.variable} ${oswald.variable} ${interCard.variable} m-0 min-h-screen bg-background p-0 font-sans antialiased text-foreground`}
       >
         {children}
       </body>

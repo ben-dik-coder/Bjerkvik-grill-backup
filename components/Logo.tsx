@@ -5,7 +5,7 @@ export function Logo({ className = "" }: { className?: string }) {
     >
       <p className="m-0 max-w-[min(100%,85vw)] text-pretty font-serif text-[clamp(0.9375rem,3.5vw,1.5625rem)] font-semibold uppercase leading-[1.15] tracking-[0.11em] text-[#f5f0e8] [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_6px_18px_rgba(0,0,0,0.38)] sm:tracking-[0.13em] md:tracking-[0.16em]">
         <span className="text-[#f5f0e8]">Bjerkvik Grill</span>
-        <span className="font-sans font-bold tracking-[0.14em] text-accent sm:tracking-[0.16em]">
+        <span className="font-sans font-semibold uppercase tracking-[0.22em] text-[#d9b465] [text-shadow:0_0_14px_rgba(217,180,101,0.45),0_1px_2px_rgba(0,0,0,0.5)] sm:tracking-[0.22em]">
           {" "}
           & Bar
         </span>

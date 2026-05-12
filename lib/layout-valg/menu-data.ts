@@ -3,22 +3,22 @@ export const LV_MENU = [
   {
     key: "burger",
     label: "Burgere",
-    sub: "Saftig kjøtt, sprø tilbehør",
-    img: "/images/bu.png",
+    sub: "Saftige burgere med ekte grillkjøtt",
+    img: "/images/bg1.PNG",
     /** Anker på `/meny` (PremiumMenyPage) */
     menyHref: "/meny#hovedretter",
   },
   {
     key: "kebab",
     label: "Kebab",
-    sub: "Rulle, tallerken og saftig kjøtt",
+    sub: "Kebab med saftig kjøtt og ferskt tilbehør",
     img: "/images/kebab.png",
     menyHref: "/meny#kebab",
   },
   {
     key: "pizza",
     label: "Pizza",
-    sub: "Sprø bunn, rike toppingvalg",
+    sub: "Klassisk pizza med fersk topping og sprø bunn",
     img: "/images/pizza.png",
     menyHref: "/meny#pizza",
   },

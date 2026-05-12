@@ -18,8 +18,23 @@ import {
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { LvMenuCoverImage } from "./LvMenuCoverImage";
+import {
+  FavorittMenyKort,
+  FAVORITT_BACON_CHEESE,
+  FAVORITT_BELGISK_VAFFEL,
+  FAVORITT_BJERKVIK_SPESIAL,
+  FAVORITT_JUICY_LUCY,
+  FAVORITT_KEBABMIX_TALLERKEN,
+  FAVORITT_TACOBURGER,
+  FAVORITT_VERNEPLIKTEN,
+} from "./FavorittMenyKort";
 import { IMG, SITE } from "@/lib/constants";
+import { FORSIDE_HERO_VARIANT_2 } from "@/lib/forside-typografi-layout-presets";
+import { FORSIDE_PLAKAT_TOPBAR_BG } from "@/lib/plakat-bakgrunn";
 import { LV_MENU } from "@/lib/layout-valg/menu-data";
+
+const FAVORITT_KORT_LENKE_KLASSE =
+  "group/card relative flex h-64 w-56 shrink-0 flex-col overflow-hidden rounded-2xl border border-[rgba(181,137,82,0.45)] sm:h-64 sm:w-60 md:rounded-[18px]";
 
 const NAV_LINKS = [
   { href: "#hjem", label: "Hjem", Icon: Home },
@@ -28,7 +43,52 @@ const NAV_LINKS = [
   { href: "#kontakt", label: "Kontakt", Icon: PhoneCall },
 ] as const;
 
-export function Hero() {
+type LvMenuItem = (typeof LV_MENU)[number];
+
+function menyCtaTekst(label: LvMenuItem["label"]): string {
+  if (label === "Burgere") return "Se burgermeny";
+  if (label === "Kebab") return "Se kebabmeny";
+  if (label === "Pizza") return "Se pizzameny";
+  return "Se i menyen";
+}
+
+/** Menykort: bilde i full bredde; mørk overlay fra venstre; tittel, undertekst og lenke. */
+function HurtigvalgSplitKort({ item }: { item: LvMenuItem }) {
+  return (
+    <Link
+      href={item.menyHref}
+      aria-label={`Full meny — ${item.label}`}
+      className="group relative flex min-h-[10.5rem] w-full items-stretch overflow-hidden rounded-[14px] border border-accent/45 bg-sunken shadow-card md:min-h-[13rem]"
+    >
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <LvMenuCoverImage
+          img={item.img}
+          sizes="(max-width: 768px) 100vw, min(896px, 100vw)"
+          className="object-cover object-[72%_center] brightness-[1.07] saturate-[1.02]"
+        />
+      </div>
+
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/60 from-[0%] via-black/36 via-[28%] via-black/16 via-[48%] to-transparent to-[84%]"
+        aria-hidden
+      />
+
+      <div className="relative z-10 flex min-h-0 w-full max-w-[48%] shrink-0 flex-col justify-center self-stretch px-3 py-4 sm:px-4 md:px-6 md:py-5">
+        <p className="text-[1.3rem] font-serif font-semibold leading-[1.1] text-[#fffdf9] drop-shadow-[0_2px_14px_rgba(0,0,0,0.88)] sm:text-xl md:text-2xl lg:text-[2.05rem]">
+          {item.label}
+        </p>
+        <p className="mt-1 max-w-sm font-sans text-xs leading-snug text-[#f7f2ea] drop-shadow-[0_1px_10px_rgba(0,0,0,0.88)] md:text-[0.875rem]">
+          {item.sub}
+        </p>
+        <span className="mt-2 inline-flex w-fit max-w-full whitespace-nowrap border-b border-[#f2e0bc] pb-0.5 text-xs font-semibold text-[#f8ebd4] drop-shadow-[0_1px_8px_rgba(0,0,0,0.75)] md:text-sm">
+          {menyCtaTekst(item.label)} →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+export function Hero({ synkMenyBakgrunn = false }: { synkMenyBakgrunn?: boolean } = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -46,12 +106,18 @@ export function Hero() {
   }, [menuOpen]);
 
   return (
-    <header id="hjem" className="relative overflow-x-hidden bg-background text-[#ece7df]">
+    <header
+      id="hjem"
+      className={`relative overflow-x-hidden text-[#ece7df] ${synkMenyBakgrunn ? "bg-transparent" : "bg-background"}`}
+    >
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className="sticky top-0 z-[103] flex w-full items-center justify-between gap-3 overflow-visible border-b border-accent/25 bg-background px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] shadow-[0_10px_28px_rgba(0,0,0,0.28)] md:px-10 md:pb-5"
+        className={`sticky top-0 z-[103] flex w-full items-center justify-between gap-3 overflow-visible border-b border-accent/25 px-5 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] shadow-[0_10px_28px_rgba(0,0,0,0.28)] md:px-10 md:pb-5 ${
+          synkMenyBakgrunn ? "backdrop-blur-md" : "bg-background"
+        }`}
+        style={synkMenyBakgrunn ? { backgroundColor: FORSIDE_PLAKAT_TOPBAR_BG } : undefined}
       >
         <Logo />
         <button
@@ -74,7 +140,7 @@ export function Hero() {
         {menuOpen ? (
           <motion.div
             key="mobil-meny-root"
-            className="fixed inset-0 z-[100]"
+            className="fixed inset-0 z-[200]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -156,53 +222,77 @@ export function Hero() {
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"
             aria-hidden
           />
-          <div className="absolute inset-x-0 bottom-28 z-[1] flex justify-center px-5 lg:bottom-32 lg:px-8">
-            <motion.div whileTap={{ scale: 0.97 }} className="w-full max-w-[280px]">
-              <Link
-                href="/meny"
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-md border border-accent px-6 text-xs font-bold uppercase tracking-widest text-ink shadow-[0_8px_24px_rgba(0,0,0,0.45)] bg-accent transition hover:brightness-105"
-              >
-                <BookOpen className="h-4 w-4" strokeWidth={2.25} aria-hidden />
-                Se meny
-              </Link>
-            </motion.div>
-          </div>
         </div>
-        <div className="flex flex-col justify-center px-6 py-8 lg:px-12 lg:py-10">
-          <p className="text-[10px] uppercase tracking-[0.5em] text-accent/75">
+        <div
+          className={
+            synkMenyBakgrunn
+              ? FORSIDE_HERO_VARIANT_2.column
+              : "flex flex-col justify-center px-6 py-8 lg:px-12 lg:py-10"
+          }
+        >
+          <p
+            className={
+              synkMenyBakgrunn
+                ? FORSIDE_HERO_VARIANT_2.tag
+                : "text-[10px] uppercase tracking-[0.5em] text-accent/75"
+            }
+          >
             Grill • Pizza • Kebab
           </p>
-          <h1 className="font-serif mt-3 text-balance text-4xl font-semibold leading-[1.06] text-[#f5f0e8] md:text-5xl lg:text-[3.25rem]">
+          <h1
+            className={
+              synkMenyBakgrunn
+                ? FORSIDE_HERO_VARIANT_2.title
+                : "font-serif mt-3 text-balance text-4xl font-semibold leading-[1.06] text-[#f5f0e8] md:text-5xl lg:text-[3.25rem]"
+            }
+          >
             Velkommen til Bjerkvik Grill
           </h1>
-          <div className="mx-auto my-4 h-px w-full max-w-xs bg-accent/30 lg:mx-0" />
-          <p className="max-w-lg text-sm leading-relaxed text-[#d7cfc4]/95 md:text-base">
-            Vi lager mat med varme og glede — ekte grillsmak, trivelig stemning og gjester som skal føle seg hjemme hos oss.
+          <div
+            className={
+              synkMenyBakgrunn
+                ? FORSIDE_HERO_VARIANT_2.divider
+                : "mx-auto my-4 h-px w-full max-w-xs bg-accent/30 lg:mx-0"
+            }
+          />
+          <p
+            className={
+              synkMenyBakgrunn
+                ? FORSIDE_HERO_VARIANT_2.body
+                : "max-w-lg text-sm leading-relaxed text-[#d7cfc4]/95 md:text-base"
+            }
+          >
+            God mat og hyggelig stemning i hjertet av Bjerkvik.
           </p>
-          <div className="mt-3 flex items-center gap-2 text-sm">
-            <Star className="h-4 w-4 fill-accent text-accent" aria-hidden />
+          <div
+            className={
+              synkMenyBakgrunn
+                ? FORSIDE_HERO_VARIANT_2.ratingRow
+                : "mt-3 flex items-center gap-2 text-sm"
+            }
+          >
+            <Star
+              className={
+                synkMenyBakgrunn
+                  ? "h-6 w-6 shrink-0 fill-accent text-accent md:h-7 md:w-7 lg:h-8 lg:w-8"
+                  : "h-4 w-4 fill-accent text-accent"
+              }
+              aria-hidden
+            />
             <span className="font-semibold text-[#f5f0e8]">{SITE.rating}</span>
-            <span className="text-[#d7cfc4]/75">
+            <span
+              className={
+                synkMenyBakgrunn ? FORSIDE_HERO_VARIANT_2.reviewMuted : "text-[#d7cfc4]/75"
+              }
+            >
               ({SITE.reviewCount} anmeldelser på Google)
             </span>
           </div>
-          <div className="mt-5 flex flex-wrap gap-5 border-l-2 border-accent pl-5">
-            <a
-              href={SITE.phoneHref}
-              className="text-sm font-semibold uppercase tracking-wide text-accent underline-offset-8 hover:underline"
-            >
-              Ring oss
-            </a>
-            <a
-              href={SITE.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-semibold uppercase tracking-wide text-[#d7cfc4] underline-offset-8 hover:text-accent hover:underline"
-            >
-              Åpne kart
-            </a>
-          </div>
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div
+            className={
+              synkMenyBakgrunn ? FORSIDE_HERO_VARIANT_2.buttonsRow : "mt-5 flex flex-wrap gap-3"
+            }
+          >
             <motion.a
               whileTap={{ scale: 0.97 }}
               href={SITE.phoneHref}
@@ -216,7 +306,7 @@ export function Hero() {
               href={SITE.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-md border-2 border-dashed border-accent/50 px-6 text-xs font-bold uppercase tracking-widest text-accent md:flex-none md:px-8"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-md border border-accent/45 bg-white/[0.04] px-6 text-xs font-bold uppercase tracking-widest text-[#ece7df] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition hover:border-accent/70 hover:bg-accent/10 hover:text-accent md:flex-none md:px-8"
             >
               <MapPin className="h-4 w-4" strokeWidth={2.25} />
               Kart
@@ -227,94 +317,111 @@ export function Hero() {
 
       <section
         aria-label="Menykategorier — hurtigvalg"
-        className="space-y-2.5 bg-background px-4 py-3 md:space-y-3 md:px-8 md:py-4"
+        className={`space-y-2 px-4 py-3 md:space-y-2.5 md:px-8 md:py-4 ${synkMenyBakgrunn ? "bg-transparent" : "bg-background"}`}
       >
-        {LV_MENU.map((c, i) => (
-          <Link
-            key={c.key}
-            href={c.menyHref}
-            aria-label={`Full meny — ${c.label}`}
-            className={`relative flex min-h-[108px] items-center overflow-hidden rounded-2xl border border-accent/40 px-5 py-6 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-black/50 md:min-h-[124px] md:px-10 md:py-7 ${
-              i % 2 === 0 ? "bg-raised" : "bg-sunken"
-            }`}
-          >
-            <LvMenuCoverImage
-              img={c.img}
-              sizes="(max-width:768px) 100vw, min(896px, 100vw)"
-              className="object-cover object-center"
-            />
-            <div
-              className={
-                c.img
-                  ? "pointer-events-none absolute inset-0 z-[1] rounded-2xl bg-gradient-to-r from-black/65 to-transparent md:from-black/50"
-                  : "pointer-events-none absolute inset-0 z-[1] rounded-2xl bg-black/30"
-              }
-              aria-hidden
-            />
-            <div className="relative z-10 flex w-full items-center justify-between gap-6">
-              <div className="max-w-[min(100%,22rem)] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.55em] text-accent">
-                  Meny
-                </p>
-                <p className="font-serif mt-1.5 text-2xl font-semibold text-[#f5f0e8] md:text-4xl">
-                  {c.label}
-                </p>
-                <p className="mt-1.5 max-w-md text-sm leading-snug text-[#ece7df]/95">{c.sub}</p>
-              </div>
-              <ChevronRight className="h-9 w-9 shrink-0 text-accent drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)] md:h-10 md:w-10" aria-hidden />
-            </div>
-          </Link>
-        ))}
+        <div className="flex flex-col gap-2 md:gap-2.5">
+          {LV_MENU.map((item) => (
+            <HurtigvalgSplitKort key={item.key} item={item} />
+          ))}
+        </div>
       </section>
 
-      {/* Layout 2: horisontale «pill»-kort */}
+      {/* Våre favoritter — horisontale firkantede kort */}
       <section className="border-t border-accent/10 px-4 pb-4 pt-6 md:px-8" aria-label="Våre favoritter">
-        <p className="mb-3 px-2 font-serif text-xl font-semibold tracking-tight text-[#f5f0e8] md:mb-4 md:text-2xl">
+        <p
+          className="mb-3 inline-block -rotate-1 px-2 font-display text-xl font-bold uppercase tracking-[0.06em] text-[#e4d9c8] [transform:translateZ(0)] md:mb-4 md:text-2xl"
+          style={{
+            textShadow: `
+              0 1px 0 rgba(255,255,255,0.05),
+              0 3px 0 rgba(0,0,0,0.55),
+              1px 1px 0 rgba(62,42,28,0.5),
+              2px 2px 0 rgba(0,0,0,0.72),
+              3px 3px 0 rgba(90,62,40,0.32),
+              0 6px 14px rgba(0,0,0,0.45)
+            `,
+          }}
+        >
           Våre favoritter
         </p>
         <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
-          {LV_MENU.map((c) => (
-            <Link
-              key={`pill-${c.key}`}
-              href={c.menyHref}
-              aria-label={`Full meny — ${c.label}`}
-              className="relative h-40 w-[72vw] shrink-0 overflow-hidden rounded-full border border-accent/20 md:w-56"
-            >
-              <LvMenuCoverImage img={c.img} sizes="260px" className="object-cover object-center" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" aria-hidden />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col justify-end px-5 pb-4 pt-10">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#f5f0e8] drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
-                  {c.label}
-                </span>
-                <span className="mt-1 text-[11px] text-[#ece7df] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">{c.sub}</span>
-              </div>
-            </Link>
-          ))}
+          {LV_MENU.map((c) =>
+            c.key === "burger" ? (
+              <Link
+                key={`fav-${c.key}`}
+                href={c.menyHref}
+                aria-label="Bacon cheese — se burgermeny"
+                className={FAVORITT_KORT_LENKE_KLASSE}
+              >
+                <FavorittMenyKort {...FAVORITT_BACON_CHEESE} />
+              </Link>
+            ) : c.key === "kebab" ? (
+              <Link
+                key={`fav-${c.key}-verneplikten`}
+                href="/meny#pizza"
+                aria-label="Vernerplikten pizza — se pizzameny"
+                className={FAVORITT_KORT_LENKE_KLASSE}
+              >
+                <FavorittMenyKort {...FAVORITT_VERNEPLIKTEN} />
+              </Link>
+            ) : (
+              <Link
+                key={`fav-${c.key}`}
+                href={c.menyHref}
+                aria-label="Bjerkvik spesial — se pizzameny"
+                className={FAVORITT_KORT_LENKE_KLASSE}
+              >
+                <FavorittMenyKort {...FAVORITT_BJERKVIK_SPESIAL} />
+              </Link>
+            ),
+          )}
+          <Link
+            key="fav-juicy-lucy"
+            href="/meny#hovedretter"
+            aria-label="Juicy Lucy — se burgere i menyen"
+            className={FAVORITT_KORT_LENKE_KLASSE}
+          >
+            <FavorittMenyKort {...FAVORITT_JUICY_LUCY} />
+          </Link>
+          <Link
+            key="fav-kebabmix-tallerken"
+            href="/meny#kebab"
+            aria-label="Kebabmix tallerken — se kebabmeny"
+            className={FAVORITT_KORT_LENKE_KLASSE}
+          >
+            <FavorittMenyKort {...FAVORITT_KEBABMIX_TALLERKEN} />
+          </Link>
+          <Link
+            key="fav-tacoburger"
+            href="/meny#hovedretter"
+            aria-label="Tacoburger — se burgere i menyen"
+            className={FAVORITT_KORT_LENKE_KLASSE}
+          >
+            <FavorittMenyKort {...FAVORITT_TACOBURGER} />
+          </Link>
+          <Link
+            key="fav-belgisk-vaffel"
+            href="/meny#smaretter"
+            aria-label="Belgisk vaffel med is — se dessert i menyen"
+            className={FAVORITT_KORT_LENKE_KLASSE}
+          >
+            <FavorittMenyKort {...FAVORITT_BELGISK_VAFFEL} />
+          </Link>
         </div>
       </section>
 
       <div className="mx-auto max-w-md px-5 pb-8 pt-2 md:px-8">
         <Link
           href="/meny"
-          className="flex items-center justify-between gap-3 rounded-2xl border border-accent/25 bg-raised px-4 py-3 shadow-card transition hover:border-accent/45 hover:bg-accent/5 active:scale-[0.99]"
+          aria-label="Se hele menyen"
+          className="flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-accent bg-accent px-6 py-3 text-ink shadow-none transition hover:brightness-105 active:scale-[0.99]"
         >
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-sunken text-accent">
-              <BookOpen className="h-4 w-4" strokeWidth={2.25} aria-hidden />
+          <span className="flex min-w-0 items-center gap-2">
+            <BookOpen className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
+            <span className="min-w-0 truncate text-xs font-bold uppercase tracking-wide text-ink">
+              Se hele menyen
             </span>
-            <div className="min-w-0 text-left">
-              <span className="block text-xs font-bold uppercase tracking-wide text-accent">
-                Meny
-              </span>
-              <span className="block truncate text-sm font-semibold text-[#f5f0e8]">
-                Se hele menyen
-              </span>
-              <span className="mt-0.5 block truncate text-[11px] text-[#d7cfc4]/75">
-                Alt på én side
-              </span>
-            </div>
-          </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+          </span>
+          <ChevronRight className="h-5 w-5 shrink-0 text-ink" aria-hidden />
         </Link>
       </div>
     </header>

@@ -135,7 +135,7 @@ function formatKr(n: number) {
   return `${n}`;
 }
 
-function DishCard({ item }: { item: MenyAllergenItem }) {
+function DishCard({ item, nr }: { item: MenyAllergenItem; nr: number }) {
   const pricesStr =
     item.prices.length > 1
       ? item.prices.map(formatKr).join(" · ")
@@ -149,6 +149,7 @@ function DishCard({ item }: { item: MenyAllergenItem }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <h4 className="text-[13px] font-bold uppercase leading-snug tracking-wide text-foreground">
+              <span className="mr-2 font-sans tabular-nums text-foreground/45">{nr}.</span>
               {item.name}
               <ChiliMark spicy={item.spicy} />
             </h4>
@@ -190,10 +191,11 @@ function DishCard({ item }: { item: MenyAllergenItem }) {
   );
 }
 
-function CompactDishList({ items }: { items: MenyAllergenItem[] }) {
+function CompactDishList({ items, startAt = 1 }: { items: MenyAllergenItem[]; startAt?: number }) {
   return (
     <div className="divide-y divide-dotted divide-white/10">
-      {items.map((item) => {
+      {items.map((item, i) => {
+        const nr = startAt + i;
         const priceNums =
           item.prices.length > 1
             ? item.prices.map(formatKr).join(" · ")
@@ -205,8 +207,11 @@ function CompactDishList({ items }: { items: MenyAllergenItem[] }) {
           <div key={item.name} className="py-4 text-[13px] sm:py-5">
             <div className="flex items-start gap-4 sm:items-baseline sm:gap-6">
               <span className="flex min-w-0 flex-1 items-baseline gap-1 pt-0.5 text-[13px] font-semibold leading-snug text-foreground">
-                {item.name}
-                <ChiliMark spicy={item.spicy} />
+                <span className="mr-1.5 shrink-0 font-sans tabular-nums text-foreground/45">{nr}.</span>
+                <span className="min-w-0">
+                  {item.name}
+                  <ChiliMark spicy={item.spicy} />
+                </span>
               </span>
               <span
                 className="mt-2 hidden min-w-[1rem] flex-1 border-b border-dotted border-white/10 sm:mb-1 sm:block"
@@ -240,8 +245,9 @@ function CompactDishList({ items }: { items: MenyAllergenItem[] }) {
 function ValgfriePoteterListe() {
   return (
     <ul className="mt-3 space-y-2 border-t border-dotted border-white/15 pt-4">
-      {valgfriePoteter.map(({ name, allergens }) => (
+      {valgfriePoteter.map(({ name, allergens }, i) => (
         <li key={name} className="text-[13px] text-foreground/90">
+          <span className="mr-2 font-sans tabular-nums text-foreground/45">{i + 1}.</span>
           <span className="font-semibold uppercase tracking-wide">{name}</span>
           {allergens ? (
             <span className="mt-1 block text-[10px] font-bold uppercase tracking-wide text-red-400">
@@ -345,7 +351,11 @@ function PizzaSection({ pizzas }: { pizzas: PizzaItem[] }) {
   );
 }
 
-export function PremiumMenyPageContent() {
+export function PremiumMenyPageContent({
+  experimentalSurface = false,
+}: {
+  experimentalSurface?: boolean;
+} = {}) {
   const [openPanels, setOpenPanels] = useState<Record<PanelKey, boolean>>(INITIAL_OPEN);
 
   const revealPanel = useCallback((panel: PanelKey, scrollToId?: string) => {
@@ -367,6 +377,7 @@ export function PremiumMenyPageContent() {
     const hashMap: Record<string, { panel: PanelKey; scroll?: string }> = {
       pizza: { panel: "pizza" },
       hovedretter: { panel: "hovedretter" },
+      snadder: { panel: "hovedretter", scroll: "snadder" },
       kebab: { panel: "kebab" },
       barnemeny: { panel: "barnemeny" },
       smaretter: { panel: "smaretter" },
@@ -382,8 +393,20 @@ export function PremiumMenyPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-accent/25 bg-gradient-to-b from-accent/[0.08] to-sunken pt-1">
+    <div
+      className={
+        experimentalSurface
+          ? "min-h-screen bg-transparent text-foreground"
+          : "min-h-screen bg-background text-foreground"
+      }
+    >
+      <header
+        className={
+          experimentalSurface
+            ? "border-b border-accent/20 bg-gradient-to-b from-[rgba(72,48,28,0.5)] to-[#080604] pt-1"
+            : "border-b border-accent/25 bg-gradient-to-b from-accent/[0.08] to-sunken pt-1"
+        }
+      >
         <div className="h-0.5 bg-accent/40" aria-hidden />
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-8 sm:py-5">
           <div>
@@ -436,32 +459,34 @@ export function PremiumMenyPageContent() {
               <div className="min-w-0">
                 <SubSectionTitle>Kjøttretter / indrefilet</SubSectionTitle>
                 <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {kjottSnadderPastaLeft.map((item) => (
-                    <DishCard key={item.name} item={item} />
+                  {kjottSnadderPastaLeft.map((item, i) => (
+                    <DishCard key={item.name} item={item} nr={i + 1} />
                   ))}
                   <h3 className="mb-4 mt-8 font-sans text-xs font-bold uppercase tracking-[0.16em] text-accent">
                     Valgfrie poteter
                   </h3>
                   <ValgfriePoteterListe />
                 </div>
-                <SubSectionTitle>Snadder</SubSectionTitle>
-                <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {snadderItems.map((item) => (
-                    <DishCard key={item.name} item={item} />
-                  ))}
+                <div id="snadder" className="scroll-mt-28">
+                  <SubSectionTitle>Snadder</SubSectionTitle>
+                  <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
+                    {snadderItems.map((item, i) => (
+                      <DishCard key={item.name} item={item} nr={i + 1} />
+                    ))}
+                  </div>
                 </div>
                 <SubSectionTitle>Pasta</SubSectionTitle>
                 <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {pastaItems.map((item) => (
-                    <DishCard key={item.name} item={item} />
+                  {pastaItems.map((item, i) => (
+                    <DishCard key={item.name} item={item} nr={i + 1} />
                   ))}
                 </div>
               </div>
               <div className="min-w-0">
                 <SubSectionTitle>Burgere</SubSectionTitle>
                 <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {burgereSalaterRight.map((item) => (
-                    <DishCard key={item.name} item={item} />
+                  {burgereSalaterRight.map((item, i) => (
+                    <DishCard key={item.name} item={item} nr={i + 1} />
                   ))}
                   <p className="mb-2 mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
                     Burger ekstra
@@ -470,8 +495,8 @@ export function PremiumMenyPageContent() {
                 </div>
                 <SubSectionTitle>Salater</SubSectionTitle>
                 <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {salater.map((item) => (
-                    <DishCard key={item.name} item={item} />
+                  {salater.map((item, i) => (
+                    <DishCard key={item.name} item={item} nr={i + 1} />
                   ))}
                 </div>
               </div>
@@ -485,8 +510,8 @@ export function PremiumMenyPageContent() {
             onToggle={() => togglePanel("kebab")}
           >
             <div className="max-w-xl rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-              {kebabItems.map((item) => (
-                <DishCard key={item.name} item={item} />
+              {kebabItems.map((item, i) => (
+                <DishCard key={item.name} item={item} nr={i + 1} />
               ))}
             </div>
           </MenyCollapsible>
@@ -515,11 +540,14 @@ export function PremiumMenyPageContent() {
               <div>
                 <SubSectionTitle>Småretter</SubSectionTitle>
                 <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                  {smaretterEtc.slice(0, 6).map((item) => (
-                    <DishCard key={item.name} item={item} />
+                  {smaretterEtc.slice(0, 6).map((item, i) => (
+                    <DishCard key={item.name} item={item} nr={i + 1} />
                   ))}
                   <div className="mt-6 border-t border-dotted border-white/12 pt-6">
-                    <CompactDishList items={smaretterEtc.slice(6)} />
+                    <CompactDishList
+                      items={smaretterEtc.slice(6)}
+                      startAt={1 + Math.min(6, smaretterEtc.length)}
+                    />
                   </div>
                 </div>
               </div>
@@ -527,8 +555,8 @@ export function PremiumMenyPageContent() {
                 <div>
                   <SubSectionTitle>Dessert</SubSectionTitle>
                   <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                    {dessertItems.map((item) => (
-                      <DishCard key={item.name} item={item} />
+                    {dessertItems.map((item, i) => (
+                      <DishCard key={item.name} item={item} nr={i + 1} />
                     ))}
                   </div>
                 </div>
@@ -565,8 +593,8 @@ export function PremiumMenyPageContent() {
                 <div>
                   <SubSectionTitle>Vinkart</SubSectionTitle>
                   <div className="rounded-[1.35rem] border border-accent/15 bg-raised px-5 py-5 shadow-card sm:px-7 sm:py-6">
-                    {vinListe.map((item) => (
-                      <DishCard key={item.name} item={item} />
+                    {vinListe.map((item, i) => (
+                      <DishCard key={item.name} item={item} nr={i + 1} />
                     ))}
                   </div>
                 </div>

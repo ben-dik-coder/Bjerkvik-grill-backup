@@ -13,6 +13,9 @@ export const SITE = {
   mapPinLabel: "Bjerkvik Grill",
   instagram: "https://www.instagram.com/bjerkvikgrill/",
   instagramHandle: "@bjerkvikgrill",
+  /** Facebook-side — oppdater URL om den avviker */
+  facebook: "https://www.facebook.com/bjerkvikgrill",
+  facebookLabel: "BJERKVIK GRILL",
   rating: "4,6",
   reviewCount: 266,
   tagline:
