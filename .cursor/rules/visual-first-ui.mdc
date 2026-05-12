@@ -1,0 +1,26 @@
+---
+description: UI-endringer visuelt først; vent på godkjenning før kode
+alwaysApply: true
+---
+
+# Visuelt først (UI)
+
+## Når dette gjelder
+
+Arbeid som endrer **utseende eller layout**: React-komponenter, Tailwind-klasser, `app/globals.css`, bilder/hero, meny-header, typografi, farger, spacing.
+
+## Før du endrer kode
+
+1. **Ikke implementer med én gang.** Lever først minst én av:
+   - **Cursor Canvas** — lesbar mock med før/etter eller varianter når endringen er større eller data-/layout-tung.
+   - **Annotert skisse i tekst** — seksjon for seksjon på skjermen + konkrete Tailwind/CSS-tiltak som punktliste (som en skisse).
+   - Brukeren sender **skjermbilde** — referer til det; beskriv endringene tydelig før koding.
+
+2. **Stopp og vent** på eksplisitt godkjenning (f.eks. «kjør», «implementer», «godkjent») før du skriver til filer.
+
+## Unntak
+
+- Ren **tekst/kopi** uten visuell effekt.
+- Ren **bugfix** som ikke endrer utseende — da kan du fikse direkte, men si i én setning hva som endres.
+
+Les Canvas-skill når du lager eller feilsøker `.canvas.tsx`-filer.
