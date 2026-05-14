@@ -1,7 +1,5 @@
 import Image from "next/image";
-import type { LV_MENU } from "@/lib/layout-valg/menu-data";
-
-type ImgSrc = (typeof LV_MENU)[number]["img"];
+import type { MenuKortCoverImgSrc } from "@/lib/layout-valg/menu-data";
 
 /** Meny-kort med foto, eller ingenting (kortets egen bakgrunn synes). */
 export function LvMenuCoverImage({
@@ -9,7 +7,7 @@ export function LvMenuCoverImage({
   sizes,
   className = "object-cover",
 }: {
-  img: ImgSrc;
+  img: MenuKortCoverImgSrc;
   sizes: string;
   className?: string;
 }) {
@@ -17,6 +15,6 @@ export function LvMenuCoverImage({
     return null;
   }
   return (
-    <Image src={img} alt="" fill sizes={sizes} className={`z-0 ${className}`} />
+    <Image src={img} alt="" fill sizes={sizes} className={`z-0 ${className}`} unoptimized />
   );
 }

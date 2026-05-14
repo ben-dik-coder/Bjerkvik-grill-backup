@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { INTERNAL_PREVIEW_ROBOTS } from "./seo-internal";
 
 /** Én visuell mal — metadata + kort beskrivelse for oversiktssiden */
 export type StilTemplate = {
@@ -148,5 +149,6 @@ export function stilTemplateMetadata(id: number): Metadata | undefined {
   return {
     title: `Stil ${t.id} — ${t.navn} | Bjerkvik Grill`,
     description: t.seoDescription,
+    robots: INTERNAL_PREVIEW_ROBOTS,
   };
 }

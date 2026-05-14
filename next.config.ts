@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DEV_CACHE === "1" ? ".next-dev" : ".next",
   /** Skjul Next-indikator / mindre dev-UI — bedre for kundedemo også i dev */
   devIndicators: false,
+  /** `localhost` og `127.0.0.1` er ulike opprinnelser; unngå dev-varsel når du åpner via IP. */
+  allowedDevOrigins: ["127.0.0.1"],
   images: {
     remotePatterns: [
       {

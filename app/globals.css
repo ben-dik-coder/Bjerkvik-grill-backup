@@ -3,17 +3,29 @@
 @tailwind utilities;
 
 :root {
-  /* Rustikk — ler, brent tre, messing (varmere og mer «slitt» enn ren gråbrun) */
-  --background: #4a3c33;
-  --foreground: #faf3e8;
-  --accent: #b8893d;
-  --raised: #5f5045;
-  --sunken: #544539;
-  --ink: #3d2e24;
+  /* Litt lysere rustikk — samme familie som før */
+  --background: #52453c;
+  --foreground: #fcf9f4;
+  --accent: #bf9145;
+  --raised: #665746;
+  --sunken: #5a4c41;
+  --ink: #433529;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+  max-width: 100%;
+  overflow-x: clip;
+  /* Unngå at iOS zoomer/justere tekst voldsomt ved rotasjon */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -23,10 +35,34 @@ body {
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  max-width: 100%;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  /* iOS Safari: 100vh er ofte «for høyt»; 100dvh følger synlig viewport */
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 @layer utilities {
+  /* Forside hero: hvit tittel med enkel grunge-effekt. */
+  .hero-reference-name {
+    color: transparent;
+    background-color: #f5f5f5;
+    background-image:
+      radial-gradient(circle at 18% 28%, rgba(35, 29, 24, 0.72) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 42% 58%, rgba(35, 29, 24, 0.58) 0 1px, transparent 1.4px),
+      radial-gradient(circle at 68% 38%, rgba(35, 29, 24, 0.62) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 82% 72%, rgba(35, 29, 24, 0.5) 0 1px, transparent 1.4px);
+    background-size: 18px 18px, 23px 23px, 29px 29px, 34px 34px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+      0 0 5px rgba(0, 0, 0, 0.4),
+      0 0 20px rgba(0, 0, 0, 0.3),
+      0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+
   .glass {
     @apply bg-white/[0.06] backdrop-blur-xl border border-white/[0.08];
   }

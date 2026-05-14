@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LAYOUT_VALG } from "@/lib/layout-valg/meta";
+import { INTERNAL_PREVIEW_ROBOTS } from "@/lib/seo-internal";
 
 export const metadata: Metadata = {
   title: "Layout-valg — gourmet-stil | Bjerkvik Grill",
   description:
     "15 unike sideoppsett med samme mørke og gull uttrykk — velg én layout å bygge videre på.",
+  robots: INTERNAL_PREVIEW_ROBOTS,
 };
 
 export default function LayoutValgHubPage() {

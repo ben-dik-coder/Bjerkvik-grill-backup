@@ -3,9 +3,9 @@ export function Logo({ className = "" }: { className?: string }) {
     <div
       className={`relative z-[104] flex flex-col gap-0.5 self-center py-0.5 ${className}`}
     >
-      <p className="m-0 max-w-[min(100%,85vw)] text-pretty font-serif text-[clamp(0.9375rem,3.5vw,1.5625rem)] font-semibold uppercase leading-[1.15] tracking-[0.11em] text-[#f5f0e8] [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_6px_18px_rgba(0,0,0,0.38)] sm:tracking-[0.13em] md:tracking-[0.16em]">
+      <p className="m-0 max-w-[min(100%,85vw)] text-pretty font-sans text-[clamp(0.9375rem,3.5vw,1.5625rem)] font-semibold uppercase leading-[1.15] tracking-[0.16em] text-[#f5f0e8] [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_6px_18px_rgba(0,0,0,0.38)] sm:tracking-[0.18em] md:tracking-[0.2em]">
         <span className="text-[#f5f0e8]">Bjerkvik Grill</span>
-        <span className="font-sans font-semibold uppercase tracking-[0.22em] text-[#d9b465] [text-shadow:0_0_14px_rgba(217,180,101,0.45),0_1px_2px_rgba(0,0,0,0.5)] sm:tracking-[0.22em]">
+        <span className="font-semibold uppercase tracking-[0.22em] text-[#d9b465] [text-shadow:0_0_14px_rgba(217,180,101,0.45),0_1px_2px_rgba(0,0,0,0.5)] sm:tracking-[0.22em]">
           {" "}
           & Bar
         </span>

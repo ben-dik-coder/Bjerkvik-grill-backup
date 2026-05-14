@@ -1,25 +1,40 @@
-# Bjerkvik Grill
+# Bjerkvik Grill — nettside
 
-Nettsidemal for Bjerkvik Grill — Next.js 15 (App Router), Tailwind, Framer Motion.
+Offentlig nettside for **Bjerkvik Grill**, bygd med **Next.js 15** (App Router), **Tailwind CSS** og **Framer Motion**.
 
-**Merk:** Kopiert fra et annet prosjekt. Oppdater **`lib/constants.ts`** (telefon, adresse, åpningstider, bilder under `public/images/`).
+## Innhold du oppdaterer ved behov
 
-## Utvikling
+- **`lib/constants.ts`** — telefon, adresse, sosiale lenker, åpningstider, gjennomsnittsscore og antall Google-anmeldelser (som vist på siden).
+- **`public/images/`** — bilder til forsiden, meny og Facebook-galleriet (`images/fb/`).
+
+## Lokalt kjøring
 
 ```bash
 npm install
 npm run dev
 ```
 
-Åpne [http://localhost:3002](http://localhost:3002) — port er satt i `package.json` (eggen side fra Sina kjører f.eks. på 3001).
+Applikasjonen starter på [http://localhost:3002](http://localhost:3002) (port er definert i `package.json`).
 
-## Bygg / demo
+## Produksjonsbygg
 
 ```bash
 npm run build
-npm run demo   # eller: npm run start (etter build)
+npm run start
+```
+
+Alternativt: `npm run demo` bygger og starter på port 3002.
+
+## Lint
+
+```bash
+npm run lint
 ```
 
 ## Deploy
 
-Som vanlig på [Vercel](https://vercel.com) — koble et **nytt** GitHub-repo for Bjerkvik (eller annet navn enn Sina-repoet).
+Typisk **[Vercel](https://vercel.com)** koblet til prosjektets Git-repository. Bruk samme kommando som over for bygg på server (`next build`).
+
+## Interne sider
+
+Prosjektet har egne «verksted»-ruter (layout-stiler, menyforhåndsvisninger m.m.). De er satt til **ingen indeksering** i søkemotorer og listet i **`app/robots.ts`**. Den vanlige besøkendes opplevelse er **`/`** (forside) og **`/meny`**.

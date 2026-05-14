@@ -3,6 +3,11 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Clock, Coins, type LucideIcon } from "lucide-react";
+import {
+  ScrollReveal,
+  SCROLL_VIEWPORT,
+  scrollRevealTransition,
+} from "@/components/ScrollReveal";
 import { OPENING_WEEK, SITE } from "@/lib/constants";
 
 const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(
@@ -69,17 +74,18 @@ export function LocationSection() {
 
   return (
     <section id="kontakt" className="mx-auto max-w-6xl px-4 py-7 md:px-8">
-      <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
-        Finn oss
-      </h2>
-      <p className="mt-2 text-sm text-white/55">
-        Adresse, telefon og åpningstider — samme som på vår Google-profil.
-      </p>
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <ScrollReveal y={12} delay={0}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
+          Finn oss
+        </h2>
+        <p className="mt-2 text-sm text-white/55">
+          Adresse, telefon og åpningstider — samme som på vår Google-profil.
+        </p>
+      </ScrollReveal>
+      <ScrollReveal
         className="mt-4 overflow-hidden rounded-3xl ring-1 ring-white/[0.08] shadow-lift"
+        y={18}
+        delay={0.04}
       >
         <div className="relative aspect-[16/11] w-full bg-zinc-900">
           <iframe
@@ -95,29 +101,38 @@ export function LocationSection() {
             {SITE.mapPinLabel}
           </div>
         </div>
-      </motion.div>
+      </ScrollReveal>
 
       <ul className="mt-4 flex flex-col gap-4">
-        {rows.map((row) => (
-          <li key={row.id} className="flex gap-3 text-sm text-white/90">
+        {rows.map((row, i) => (
+          <motion.li
+            key={row.id}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={SCROLL_VIEWPORT}
+            transition={scrollRevealTransition(i * 0.06)}
+            className="flex gap-3 text-sm text-white/90"
+          >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-2xl bg-accent/12 text-accent ring-1 ring-accent/25">
               <row.Icon className="h-4 w-4" strokeWidth={2} />
             </span>
             <div className="min-w-0 flex-1 pt-1.5">{row.node}</div>
-          </li>
+          </motion.li>
         ))}
       </ul>
 
-      <motion.a
-        href={SITE.mapsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        whileTap={{ scale: 0.99 }}
-        className="mt-5 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
-      >
-        <MapPin className="h-4 w-4" />
-        Veibeskrivelse
-      </motion.a>
+      <ScrollReveal className="mt-5 block" y={14} delay={0.06}>
+        <motion.a
+          href={SITE.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          whileTap={{ scale: 0.99 }}
+          className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
+        >
+          <MapPin className="h-4 w-4" />
+          Veibeskrivelse
+        </motion.a>
+      </ScrollReveal>
     </section>
   );
 }

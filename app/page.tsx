@@ -10,24 +10,32 @@ import { forsidePlakatBakgrunnAktivert } from "@/lib/forside-plakat-bakgrunn-rol
 export default function Home() {
   const plakatForside = forsidePlakatBakgrunnAktivert();
 
-  const innhold = (
-    <>
-      <main className="pb-[calc(9.5rem+env(safe-area-inset-bottom))] lg:pb-[calc(10rem+env(safe-area-inset-bottom))]">
-        <Hero synkMenyBakgrunn={plakatForside} />
-        <div className="relative mx-auto max-w-7xl">
-          <FacebookFeed />
-          <Reviews />
-          <AboutSection />
-          <LocationSection />
-        </div>
-      </main>
-      <BottomNav />
-    </>
+  const main = (
+    <main className="pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">
+      <Hero synkMenyBakgrunn={plakatForside} />
+      <div className="relative mx-auto max-w-7xl">
+        <FacebookFeed />
+        <Reviews />
+        <AboutSection />
+        <LocationSection />
+      </div>
+    </main>
   );
 
+  /** `BottomNav` er `fixed` til viewport — må ligge utenfor plakat-/overflow-shell. Ytre div har IKKE `overflow-x-clip`. */
   if (!plakatForside) {
-    return <div className="min-h-screen bg-background">{innhold}</div>;
+    return (
+      <div className="relative min-h-dvh w-full">
+        <div className="min-h-screen min-h-dvh w-full overflow-x-clip bg-background">{main}</div>
+        <BottomNav />
+      </div>
+    );
   }
 
-  return <ForsidePlakatBakgrunnSkall>{innhold}</ForsidePlakatBakgrunnSkall>;
+  return (
+    <div className="relative min-h-dvh w-full">
+      <ForsidePlakatBakgrunnSkall>{main}</ForsidePlakatBakgrunnSkall>
+      <BottomNav />
+    </div>
+  );
 }

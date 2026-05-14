@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter, Manrope, Oswald } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
+import { Bebas_Neue, Cormorant_Garamond, Inter, Manrope, Oswald } from "next/font/google";
 import "./globals.css";
 
 const serif = Cormorant_Garamond({
@@ -18,7 +19,7 @@ const sans = Manrope({
 
 const oswald = Oswald({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-display",
   display: "swap",
 });
@@ -27,6 +28,13 @@ const interCard = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-card",
+  display: "swap",
+});
+
+const bebas = Bebas_Neue({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-bebas",
   display: "swap",
 });
 
@@ -45,7 +53,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#4a3c33",
+  themeColor: "#52453c",
   viewportFit: "cover",
 };
 
@@ -57,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang="no">
       <body
-        className={`${sans.variable} ${serif.variable} ${oswald.variable} ${interCard.variable} m-0 min-h-screen bg-background p-0 font-sans antialiased text-foreground`}
+        className={`${sans.variable} ${serif.variable} ${oswald.variable} ${interCard.variable} ${bebas.variable} ${GeistMono.variable} m-0 min-h-screen min-h-dvh bg-background p-0 font-sans antialiased text-foreground`}
       >
         {children}
       </body>

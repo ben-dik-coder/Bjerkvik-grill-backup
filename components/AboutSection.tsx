@@ -1,18 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { Heart } from "lucide-react";
 import { SITE } from "@/lib/constants";
 
 export function AboutSection() {
   return (
     <section id="om" className="mx-auto max-w-6xl px-4 py-8 md:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <ScrollReveal
         className="overflow-hidden rounded-3xl bg-raised p-4 shadow-card ring-1 ring-accent/10 md:flex md:gap-6 md:p-5 lg:p-6"
+        y={20}
+        delay={0}
       >
         <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-2xl bg-black md:w-[44%] md:self-start">
           <Image
@@ -46,7 +45,7 @@ export function AboutSection() {
             Laget med kjærlighet i Bjerkvik
           </p>
         </div>
-      </motion.div>
+      </ScrollReveal>
     </section>
   );
 }

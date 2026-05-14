@@ -6,6 +6,7 @@ import {
   stilTemplateMetadata,
 } from "@/lib/stiler-templates";
 import { STIL_PREVIEW_COMPONENTS } from "@/components/stiler/registry";
+import { INTERNAL_PREVIEW_ROBOTS } from "@/lib/seo-internal";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -16,7 +17,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const num = parseStilTemplateId(id);
-  if (num === undefined) return { title: "Stil | Bjerkvik Grill" };
+  if (num === undefined)
+    return {
+      title: "Stil | Bjerkvik Grill",
+      robots: INTERNAL_PREVIEW_ROBOTS,
+    };
   return stilTemplateMetadata(num)!;
 }
 

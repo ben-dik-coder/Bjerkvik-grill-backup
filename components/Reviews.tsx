@@ -1,12 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Info, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { REVIEWS, SITE } from "@/lib/constants";
+import {
+  ScrollReveal,
+  SCROLL_EASE,
+  SCROLL_VIEWPORT,
+  scrollRevealTransition,
+} from "@/components/ScrollReveal";
 
-function parseRatingDisplay(s: string): number {
+export function parseRatingDisplay(s: string): number {
   const n = Number(String(s).replace(",", "."));
   return Number.isFinite(n) ? Math.min(5, Math.max(0, n)) : 0;
 }
@@ -34,7 +40,7 @@ function GoogleMark() {
   );
 }
 
-function StarsRow({
+export function StarsRow({
   value,
   size = "md",
 }: {
@@ -114,28 +120,67 @@ function ReviewCardContent({
           </div>
         </div>
       </div>
-      <p className="text-[15px] leading-relaxed text-white/85">{text}</p>
+      <p className="whitespace-pre-line text-[15px] leading-relaxed text-white/85">{text}</p>
     </>
   );
 }
 
+/** Tid mellom automatisk glidebrytere på mobil-anmeldelser */
+const REVIEW_MOBILE_AUTO_INTERVAL_MS = 6500;
+
 export function Reviews() {
   const [active, setActive] = useState(0);
+  const [autoplayKey, setAutoplayKey] = useState(0);
   const r = REVIEWS[active];
   const avgRating = useMemo(() => parseRatingDisplay(SITE.rating), []);
+
+  /** Start timeren på nytt (f.eks. etter at bruker har valgt prikk selv). */
+  const bumpAutoplay = () => setAutoplayKey((k) => k + 1);
+
+  useEffect(() => {
+    /** `window`-timere er `number` i nettleseren (matcher DOM-typen). */
+    let id: number | undefined;
+
+    const clear = () => {
+      if (id != null) window.clearInterval(id);
+      id = undefined;
+    };
+
+    const mq = window.matchMedia("(max-width: 767px)");
+
+    const arm = () => {
+      clear();
+      if (!mq.matches) return;
+      id = window.setInterval(() => {
+        if (document.visibilityState !== "visible") return;
+        setActive((prev) => (prev + 1) % REVIEWS.length);
+      }, REVIEW_MOBILE_AUTO_INTERVAL_MS);
+    };
+
+    arm();
+    mq.addEventListener("change", arm);
+    return () => {
+      mq.removeEventListener("change", arm);
+      clear();
+    };
+  }, [autoplayKey]);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-7 md:px-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <ScrollReveal y={14} delay={0} className="min-w-0">
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
             Hva folk sier
           </h2>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-white/55">
             Her er noen av tilbakemeldingene folk har lagt igjen på Google.
           </p>
-        </div>
-        <div className="flex flex-col items-start gap-2 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 sm:items-end sm:text-right">
+        </ScrollReveal>
+        <ScrollReveal
+          y={14}
+          delay={0.07}
+          className="flex w-full flex-col items-start gap-2 rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-3 sm:max-w-sm sm:items-end sm:text-right"
+        >
           <div className="flex items-center gap-3">
             <span className="font-serif text-3xl font-semibold tabular-nums tracking-tight text-white">
               {SITE.rating}
@@ -147,20 +192,21 @@ export function Reviews() {
             <span className="font-semibold text-white/80">{SITE.reviewCount}</span>{" "}
             anmeldelser på Google
           </p>
-          <p className="flex items-center gap-1.5 text-[11px] text-white/35">
-            <Info className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            Google skriver at anmeldelser ikke er verifisert.
-          </p>
-        </div>
+        </ScrollReveal>
       </div>
 
       {/* Mobil: ett kort med prikker */}
-      <div className="mt-4 md:hidden">
+      <ScrollReveal
+        className="mt-4 md:hidden"
+        y={18}
+        delay={0.03}
+        aria-live="polite"
+      >
         <motion.div
           key={r.id}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.42, ease: SCROLL_EASE }}
           className="overflow-hidden rounded-3xl bg-raised p-4 shadow-card ring-1 ring-white/[0.06]"
         >
           <ReviewCardContent {...r} />
@@ -169,25 +215,30 @@ export function Reviews() {
               <button
                 key={review.id}
                 type="button"
-                onClick={() => setActive(i)}
+                onClick={() => {
+                  setActive(i);
+                  bumpAutoplay();
+                }}
                 className={`h-2 w-2 rounded-full transition ${
                   i === active ? "bg-accent" : "bg-white/25"
                 }`}
                 aria-label={`Vis anmeldelse ${i + 1}`}
+                aria-current={i === active ? "true" : undefined}
               />
             ))}
           </div>
         </motion.div>
-      </div>
+      </ScrollReveal>
 
       {/* PC / tablet */}
       <div className="mt-4 hidden gap-4 md:mx-auto md:grid md:max-w-4xl md:grid-cols-2">
-        {REVIEWS.map((review) => (
+        {REVIEWS.map((review, idx) => (
           <motion.article
             key={review.id}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={SCROLL_VIEWPORT}
+            transition={scrollRevealTransition(idx * 0.05)}
             className="rounded-3xl bg-raised p-5 shadow-card ring-1 ring-white/[0.06]"
           >
             <ReviewCardContent {...review} />
@@ -195,7 +246,8 @@ export function Reviews() {
         ))}
       </div>
 
-      <motion.a
+      <ScrollReveal y={16} delay={0.04} className="mt-4">
+        <motion.a
         href={SITE.mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -205,6 +257,7 @@ export function Reviews() {
         <Star className="h-4 w-4 fill-accent text-accent" />
         Se alle {SITE.reviewCount} på Google
       </motion.a>
+      </ScrollReveal>
     </section>
   );
 }

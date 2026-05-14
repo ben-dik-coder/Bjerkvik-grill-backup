@@ -7,31 +7,54 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
   Phone,
-  MapPin,
-  Star,
   X,
   Home,
   BookOpen,
   Users,
   PhoneCall,
   ChevronRight,
+  MapPin,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { LvMenuCoverImage } from "./LvMenuCoverImage";
+import { ScrollReveal } from "./ScrollReveal";
 import {
   FavorittMenyKort,
-  FAVORITT_BACON_CHEESE,
-  FAVORITT_BELGISK_VAFFEL,
+  FAVORITT_ALL_IN_BEEF,
+  FAVORITT_BIFFSNADDER,
   FAVORITT_BJERKVIK_SPESIAL,
   FAVORITT_JUICY_LUCY,
-  FAVORITT_KEBABMIX_TALLERKEN,
-  FAVORITT_TACOBURGER,
-  FAVORITT_VERNEPLIKTEN,
+  FAVORITT_MEATLOVER,
+  FAVORITT_MEKSISNADDER,
+  FAVORITT_TOUCH,
 } from "./FavorittMenyKort";
+import { StarsRow, parseRatingDisplay } from "@/components/Reviews";
 import { IMG, SITE } from "@/lib/constants";
-import { FORSIDE_HERO_VARIANT_2 } from "@/lib/forside-typografi-layout-presets";
 import { FORSIDE_PLAKAT_TOPBAR_BG } from "@/lib/plakat-bakgrunn";
-import { LV_MENU } from "@/lib/layout-valg/menu-data";
+import { LV_MENU, HURTIGVALG_BIFF_BANNER } from "@/lib/layout-valg/menu-data";
+
+const MAP_EMBED_FORSIDE = `https://maps.google.com/maps?q=${encodeURIComponent(
+  SITE.address,
+)}&output=embed`;
+
+/** Samme uttrykk som hero-CTA «Se vår meny» (plakat med max-bredde). */
+const HERO_MENY_CTA_KLASSE =
+  "inline-flex min-h-[46px] w-full max-w-xs items-center justify-center gap-2 rounded-md border border-accent bg-accent px-6 text-xs font-black uppercase tracking-[0.18em] text-ink transition hover:brightness-105 active:scale-[0.99]";
+
+/** Full bredde variant (hero uten plakat-synk). */
+const HERO_MENY_CTA_KLASSE_FULL_BREDDE =
+  "inline-flex min-h-[46px] w-full items-center justify-center gap-2 rounded-md border border-accent bg-accent px-6 text-xs font-black uppercase tracking-[0.18em] text-ink transition hover:brightness-105 active:scale-[0.99]";
+
+/** Gul knapp i halv bredde (f.eks. faner to kolonner). */
+const HERO_MENY_CTA_KLASSE_AKTIV_DELT =
+  "inline-flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-md border border-accent bg-accent px-2 text-xs font-black uppercase tracking-[0.18em] text-ink transition hover:brightness-105 active:scale-[0.99] sm:px-3 sm:gap-2";
+
+const HERO_MENY_CTA_KLASSE_INAKTIV_DELT =
+  "inline-flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-md border border-accent/50 bg-transparent px-2 text-xs font-black uppercase tracking-[0.18em] text-accent transition hover:bg-accent/15 hover:text-ink sm:px-3 sm:gap-2";
+
+/** Under innebygd kart: samme gullknapp som hero, flatt mot kartet (forelder har ramme). */
+const HERO_MENY_CTA_KLASSE_KART_NEDRE =
+  "inline-flex min-h-[46px] w-full items-center justify-center gap-2 border-t border-black/10 bg-accent px-6 text-xs font-black uppercase tracking-[0.18em] text-ink transition hover:brightness-105 active:scale-[0.99]";
 
 const FAVORITT_KORT_LENKE_KLASSE =
   "group/card relative flex h-64 w-56 shrink-0 flex-col overflow-hidden rounded-2xl border border-[rgba(181,137,82,0.45)] sm:h-64 sm:w-60 md:rounded-[18px]";
@@ -45,44 +68,147 @@ const NAV_LINKS = [
 
 type LvMenuItem = (typeof LV_MENU)[number];
 
-function menyCtaTekst(label: LvMenuItem["label"]): string {
+type HurtigvalgMenyBannerItem = LvMenuItem | typeof HURTIGVALG_BIFF_BANNER;
+
+/** Samme fotostil på alle meny-hurtigkortene. */
+const HURTIGVALG_IMG_KLASSE =
+  "brightness-[1.05] saturate-[1.06] md:brightness-[1.06] md:saturate-[1.07]";
+
+const HURTIGVALG_CARD_KLASSE =
+  "group relative overflow-hidden rounded-[14px] border border-[#b58952]/45 bg-[#16120f] shadow-card";
+
+function hurtigvalgCtaTekst(label: HurtigvalgMenyBannerItem["label"]): string {
   if (label === "Burgere") return "Se burgermeny";
   if (label === "Kebab") return "Se kebabmeny";
   if (label === "Pizza") return "Se pizzameny";
+  if (label === "Biff") return "Se biffmeny";
   return "Se i menyen";
 }
 
-/** Menykort: bilde i full bredde; mørk overlay fra venstre; tittel, undertekst og lenke. */
-function HurtigvalgSplitKort({ item }: { item: LvMenuItem }) {
+/** Meny-hurtigkort: samme layout som burger (gyllen label, to tittellinjer, strek, brødtekst, CTA + rund knapp). */
+function HurtigvalgMenyKort({
+  item,
+  variant,
+}: {
+  item: HurtigvalgMenyBannerItem;
+  variant: "featured" | "half";
+}) {
+  const featured = variant === "featured";
+  const imgObj =
+    featured && item.key === "biff" ? "object-[52%_center]" : featured ? "object-[58%_center]" : "object-[52%_center]";
+
   return (
     <Link
       href={item.menyHref}
-      aria-label={`Full meny — ${item.label}`}
-      className="group relative flex min-h-[10.5rem] w-full items-stretch overflow-hidden rounded-[14px] border border-accent/45 bg-sunken shadow-card md:min-h-[13rem]"
+      aria-label={`${item.heroEyebrow} — ${item.heroTitle1} ${item.heroTitle2}`}
+      className={`${HURTIGVALG_CARD_KLASSE} flex w-full flex-col ${
+        featured
+          ? "min-h-[15rem] md:min-h-[18rem] lg:min-h-[19rem]"
+          : "min-h-[15rem] md:min-h-[17.5rem] lg:min-h-[18.5rem]"
+      }`}
     >
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 z-0">
         <LvMenuCoverImage
           img={item.img}
-          sizes="(max-width: 768px) 100vw, min(896px, 100vw)"
-          className="object-cover object-[72%_center] brightness-[1.07] saturate-[1.02]"
+          sizes={
+            featured
+              ? "(max-width: 768px) 100vw, min(1024px, 100vw)"
+              : "(max-width: 768px) 50vw, 400px"
+          }
+          className={`object-cover ${imgObj} ${HURTIGVALG_IMG_KLASSE}`}
         />
       </div>
-
       <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/60 from-[0%] via-black/36 via-[28%] via-black/16 via-[48%] to-transparent to-[84%]"
+        className={
+          item.key === "biff"
+            ? "pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/[0.52] via-black/[0.28] via-[52%] to-black/[0.06] md:via-[56%]"
+            : "pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/[0.86] via-black/[0.52] via-45% to-black/10 md:via-55%"
+        }
         aria-hidden
       />
 
-      <div className="relative z-10 flex min-h-0 w-full max-w-[48%] shrink-0 flex-col justify-center self-stretch px-3 py-4 sm:px-4 md:px-6 md:py-5">
-        <p className="text-[1.3rem] font-serif font-semibold leading-[1.1] text-[#fffdf9] drop-shadow-[0_2px_14px_rgba(0,0,0,0.88)] sm:text-xl md:text-2xl lg:text-[2.05rem]">
-          {item.label}
-        </p>
-        <p className="mt-1 max-w-sm font-sans text-xs leading-snug text-[#f7f2ea] drop-shadow-[0_1px_10px_rgba(0,0,0,0.88)] md:text-[0.875rem]">
-          {item.sub}
-        </p>
-        <span className="mt-2 inline-flex w-fit max-w-full whitespace-nowrap border-b border-[#f2e0bc] pb-0.5 text-xs font-semibold text-[#f8ebd4] drop-shadow-[0_1px_8px_rgba(0,0,0,0.75)] md:text-sm">
-          {menyCtaTekst(item.label)} →
-        </span>
+      <div
+        className={`relative z-10 flex w-full flex-1 flex-col justify-between ${
+          featured
+            ? "min-h-[15rem] px-4 pb-6 pt-5 sm:min-h-[15.5rem] sm:px-6 sm:pb-7 sm:pt-6 md:min-h-[18rem] md:px-8 md:pb-10 md:pt-10 lg:min-h-[19rem]"
+            : "min-h-[15rem] px-3.5 pb-5 pt-4 sm:min-h-[15.5rem] sm:px-4 sm:pb-6 sm:pt-5 md:min-h-[17.5rem] md:px-5 md:pb-8 md:pt-7 lg:min-h-[18.5rem] lg:px-6"
+        }`}
+      >
+        <div
+          className={
+            featured
+              ? "max-w-[min(20rem,calc(100%-3rem))] md:max-w-md"
+              : "max-w-[min(100%,calc(100%-3rem))] sm:max-w-[16rem] md:max-w-[min(88%,17.5rem)]"
+          }
+        >
+          <p
+            className={`font-black uppercase tracking-[0.26em] text-[#dcb470] ${
+              featured ? "text-[10px] md:text-[11px]" : "text-[9px] sm:text-[10px] md:text-[10.5px]"
+            }`}
+          >
+            {item.heroEyebrow}
+          </p>
+          <h2
+            className={`mt-1.5 font-display font-bold uppercase leading-[1.03] tracking-[0.04em] text-white sm:mt-2 ${
+              featured
+                ? "text-[clamp(1.65rem,4.9vw,2.75rem)]"
+                : "text-[clamp(1.05rem,3.4vw,1.55rem)] md:text-[clamp(1.15rem,2.2vw,1.75rem)]"
+            }`}
+          >
+            {item.heroTitle1}
+          </h2>
+          <h3
+            className={`mt-0.5 font-display font-bold uppercase leading-tight tracking-[0.12em] text-white/92 ${
+              featured
+                ? "text-[clamp(1.08rem,2.9vw,1.42rem)]"
+                : "text-[clamp(0.72rem,2.2vw,1.05rem)] md:text-[clamp(0.82rem,1.4vw,1.15rem)]"
+            }`}
+          >
+            {item.heroTitle2}
+          </h3>
+          <div
+            className={`mt-3 h-[2px] shrink-0 rounded-full bg-[#b58952] sm:mt-4 ${
+              featured ? "w-11 md:w-12 md:rounded-sm" : "w-9 sm:w-10 md:w-11"
+            }`}
+            aria-hidden
+          />
+          {item.key !== "biff" ? (
+            <p
+              className={`mt-3 font-medium leading-snug text-white/[0.92] sm:mt-4 ${
+                featured
+                  ? "max-w-[18.5rem] text-[13px] md:text-sm md:leading-relaxed"
+                  : "max-w-none text-[10.5px] line-clamp-4 sm:text-[11px] sm:leading-relaxed md:line-clamp-3 md:text-xs"
+              }`}
+            >
+              {item.sub}
+            </p>
+          ) : null}
+        </div>
+
+        <div className={`flex items-center gap-2 sm:gap-3 ${featured ? "pt-6 md:pt-8" : "pt-4 md:pt-6"}`}>
+          <span
+            className={`font-black uppercase tracking-[0.2em] text-[#dcb470] ${
+              featured
+                ? "text-[10px] md:text-[11px] md:tracking-[0.22em]"
+                : "text-[9px] tracking-[0.18em] sm:text-[10px] sm:tracking-[0.2em] md:text-[10.5px]"
+            }`}
+          >
+            {hurtigvalgCtaTekst(item.label)}
+          </span>
+          <span
+            className={`flex shrink-0 items-center justify-center rounded-full border-[2px] border-[#c9a35c] bg-[#bf9145] text-ink shadow-[0_10px_24px_rgba(0,0,0,0.35)] ring-1 ring-black/25 transition group-hover:border-[#d4b06a] group-hover:brightness-[1.06] group-active:scale-[0.98] ${
+              featured
+                ? "h-10 w-10 md:h-11 md:w-11"
+                : "h-9 w-9 sm:h-[2.375rem] sm:w-[2.375rem] md:h-10 md:w-10"
+            }`}
+            aria-hidden
+          >
+            <ChevronRight
+              className={featured ? "h-5 w-5 md:h-[1.35rem] md:w-[1.35rem]" : "h-[1.1rem] w-[1.1rem] sm:h-5 sm:w-5"}
+              strokeWidth={2.65}
+            />
+          </span>
+        </div>
       </div>
     </Link>
   );
@@ -90,6 +216,7 @@ function HurtigvalgSplitKort({ item }: { item: LvMenuItem }) {
 
 export function Hero({ synkMenyBakgrunn = false }: { synkMenyBakgrunn?: boolean } = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [introKontaktTab, setIntroKontaktTab] = useState<"ring" | "kart">("ring");
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -206,162 +333,246 @@ export function Hero({ synkMenyBakgrunn = false }: { synkMenyBakgrunn?: boolean 
         ) : null}
       </AnimatePresence>
 
-      {/* Hero-bilde + tekst først */}
-      <div className="grid border-y border-accent/10 lg:grid-cols-2 lg:items-stretch">
-        <div className="relative min-h-[260px] lg:min-h-[min(520px,55vh)] lg:bg-black">
-          <Image
-            src={IMG.hero1}
-            alt=""
-            fill
-            className="object-cover object-center lg:object-contain lg:object-center"
-            sizes="(max-width:1024px) 100vw, 50vw"
-            priority
-            unoptimized
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"
-            aria-hidden
-          />
-        </div>
+      {/* Hero — fotobakgrunn (`public/images/hr.png`, se IMG.bg5) */}
+      <div className="border-y border-[#b58952]/35">
         <div
-          className={
+          className={`relative overflow-hidden bg-[#453a32] ${
             synkMenyBakgrunn
-              ? FORSIDE_HERO_VARIANT_2.column
-              : "flex flex-col justify-center px-6 py-8 lg:px-12 lg:py-10"
-          }
+              ? "min-h-[min(380px,58dvh)] lg:min-h-[min(600px,62dvh)]"
+              : "min-h-[min(320px,50dvh)] lg:min-h-[min(520px,55dvh)]"
+          }`}
         >
-          <p
-            className={
-              synkMenyBakgrunn
-                ? FORSIDE_HERO_VARIANT_2.tag
-                : "text-[10px] uppercase tracking-[0.5em] text-accent/75"
-            }
-          >
-            Grill • Pizza • Kebab
-          </p>
-          <h1
-            className={
-              synkMenyBakgrunn
-                ? FORSIDE_HERO_VARIANT_2.title
-                : "font-serif mt-3 text-balance text-4xl font-semibold leading-[1.06] text-[#f5f0e8] md:text-5xl lg:text-[3.25rem]"
-            }
-          >
-            Velkommen til Bjerkvik Grill
-          </h1>
-          <div
-            className={
-              synkMenyBakgrunn
-                ? FORSIDE_HERO_VARIANT_2.divider
-                : "mx-auto my-4 h-px w-full max-w-xs bg-accent/30 lg:mx-0"
-            }
-          />
-          <p
-            className={
-              synkMenyBakgrunn
-                ? FORSIDE_HERO_VARIANT_2.body
-                : "max-w-lg text-sm leading-relaxed text-[#d7cfc4]/95 md:text-base"
-            }
-          >
-            God mat og hyggelig stemning i hjertet av Bjerkvik.
-          </p>
-          <div
-            className={
-              synkMenyBakgrunn
-                ? FORSIDE_HERO_VARIANT_2.ratingRow
-                : "mt-3 flex items-center gap-2 text-sm"
-            }
-          >
-            <Star
-              className={
-                synkMenyBakgrunn
-                  ? "h-6 w-6 shrink-0 fill-accent text-accent md:h-7 md:w-7 lg:h-8 lg:w-8"
-                  : "h-4 w-4 fill-accent text-accent"
-              }
-              aria-hidden
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <Image
+              src={IMG.bg5}
+              alt=""
+              fill
+              className="object-cover object-[center_40%]"
+              sizes="100vw"
+              unoptimized
             />
-            <span className="font-semibold text-[#f5f0e8]">{SITE.rating}</span>
-            <span
-              className={
-                synkMenyBakgrunn ? FORSIDE_HERO_VARIANT_2.reviewMuted : "text-[#d7cfc4]/75"
-              }
-            >
-              ({SITE.reviewCount} anmeldelser på Google)
-            </span>
           </div>
           <div
-            className={
-              synkMenyBakgrunn ? FORSIDE_HERO_VARIANT_2.buttonsRow : "mt-5 flex flex-wrap gap-3"
-            }
+            className={`pointer-events-none absolute inset-0 z-[1] ${
+              synkMenyBakgrunn ? "bg-[#453a32]/20" : "bg-[#453a32]/89"
+            }`}
+            aria-hidden
+          />
+          <div
+            className={`pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b ${
+              synkMenyBakgrunn
+                ? "from-black/10 via-transparent to-black/18"
+                : "from-black/40 via-black/12 to-black/50"
+            }`}
+            aria-hidden
+          />
+          {synkMenyBakgrunn ? (
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[55%] bg-gradient-to-t from-black/82 via-black/48 to-transparent"
+              aria-hidden
+            />
+          ) : null}
+          <div
+            className={`relative z-10 flex w-full flex-col gap-6 ${
+              synkMenyBakgrunn
+                ? "min-h-[min(380px,58dvh)] items-center justify-end px-5 pb-8 pt-8 text-center md:px-8 md:pb-10 md:pt-10 lg:min-h-[min(600px,62dvh)] lg:px-10 lg:pb-12 lg:pt-12"
+                : "min-h-[min(320px,50dvh)] items-stretch justify-end px-6 pb-14 pt-8 lg:min-h-[min(520px,55dvh)] lg:px-12 lg:pb-20 lg:pt-10"
+            }`}
           >
-            <motion.a
-              whileTap={{ scale: 0.97 }}
-              href={SITE.phoneHref}
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-md border border-accent px-6 text-xs font-bold uppercase tracking-widest text-ink bg-accent md:flex-none md:px-8"
-            >
-              <Phone className="h-4 w-4" strokeWidth={2.25} />
-              Ring
-            </motion.a>
-            <motion.a
-              whileTap={{ scale: 0.97 }}
-              href={SITE.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-md border border-accent/45 bg-white/[0.04] px-6 text-xs font-bold uppercase tracking-widest text-[#ece7df] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition hover:border-accent/70 hover:bg-accent/10 hover:text-accent md:flex-none md:px-8"
-            >
-              <MapPin className="h-4 w-4" strokeWidth={2.25} />
-              Kart
-            </motion.a>
+            {synkMenyBakgrunn ? (
+              <div className="flex w-full max-w-md flex-col items-center gap-3">
+                <Link href="/meny" className={HERO_MENY_CTA_KLASSE}>
+                  <BookOpen className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                  Se vår meny
+                </Link>
+              </div>
+            ) : (
+              <div className="flex w-full flex-col gap-2">
+                <Link href="/meny" className={HERO_MENY_CTA_KLASSE_FULL_BREDDE}>
+                  <BookOpen className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                  Se vår meny
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <section
+        aria-labelledby="forside-intro-heading"
+        className="border-t border-[#b58952]/35 bg-[#453a32] pb-[calc(2.25rem+env(safe-area-inset-bottom,0px))] text-[#e8e2da] lg:pb-0"
+      >
+        <ScrollReveal className="mx-auto max-w-2xl rounded-none px-4 py-4 backdrop-blur-[12px] md:px-8 md:py-5">
+          <div className="space-y-2 rounded-none bg-transparent text-center font-serif md:space-y-2.5">
+          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-accent md:text-sm">
+            {SITE.forsideIntroEyebrow}
+          </p>
+          <h1
+            id="forside-intro-heading"
+            className="text-balance text-2xl font-semibold leading-[1.15] tracking-tight text-[#faf7f2] [text-shadow:0_1px_2px_rgba(0,0,0,0.35)] sm:text-3xl md:text-[2.15rem]"
+          >
+            Velkommen til {SITE.name}
+          </h1>
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[0.8rem] tabular-nums text-[#f0ebe5] [text-shadow:0_1px_2px_rgba(0,0,0,0.25)] sm:text-sm"
+            role="group"
+            aria-label={`${SITE.rating} av 5 på Google, basert på ${SITE.reviewCount} vurderinger`}
+          >
+            <StarsRow value={parseRatingDisplay(SITE.rating)} size="sm" />
+            <span className="font-semibold text-accent">{SITE.rating}</span>
+            <span className="text-[#d8d0c8]">·</span>
+            <a
+              href={SITE.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-[#e8dfd5] underline decoration-[#b58952]/50 underline-offset-2 transition hover:text-[#faf7f2] hover:decoration-accent"
+            >
+              {SITE.reviewCount} vurderinger på Google
+            </a>
+          </div>
+          <p className="text-base font-medium leading-relaxed text-[#f3efe8] [font-family:Times,'Times_New_Roman',Georgia,serif] [text-shadow:0_1px_2px_rgba(0,0,0,0.28)]">
+            {SITE.forsideIntro}
+          </p>
+
+          <div className="mx-auto mt-5 flex w-full max-w-xs flex-col gap-3">
+            <div
+              className="flex w-full gap-2"
+              role="tablist"
+              aria-label="Ring oss eller se kart"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={introKontaktTab === "ring"}
+                aria-controls="intro-kontakt-panel"
+                id="intro-tab-ring"
+                onClick={() => setIntroKontaktTab("ring")}
+                className={
+                  introKontaktTab === "ring"
+                    ? HERO_MENY_CTA_KLASSE_AKTIV_DELT
+                    : HERO_MENY_CTA_KLASSE_INAKTIV_DELT
+                }
+              >
+                Ring oss
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={introKontaktTab === "kart"}
+                aria-controls="intro-kontakt-panel"
+                id="intro-tab-kart"
+                onClick={() => setIntroKontaktTab("kart")}
+                className={
+                  introKontaktTab === "kart"
+                    ? HERO_MENY_CTA_KLASSE_AKTIV_DELT
+                    : HERO_MENY_CTA_KLASSE_INAKTIV_DELT
+                }
+              >
+                Kart
+              </button>
+            </div>
+
+            <div
+              id="intro-kontakt-panel"
+              role="tabpanel"
+              aria-labelledby={introKontaktTab === "ring" ? "intro-tab-ring" : "intro-tab-kart"}
+              className="w-full"
+            >
+              {introKontaktTab === "ring" ? (
+                <a href={SITE.phoneHref} className={`${HERO_MENY_CTA_KLASSE} mx-auto`}>
+                  <Phone className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
+                  <span className="font-geist-mono tabular-nums tracking-wide">
+                    {SITE.phoneDisplay}
+                  </span>
+                </a>
+              ) : (
+                <div className="mx-auto w-full max-w-xs overflow-hidden rounded-md border border-accent/50">
+                  <div className="relative aspect-[16/10] w-full bg-[#2a2520]">
+                    <iframe
+                      title="Kart — Bjerkvik Grill"
+                      src={MAP_EMBED_FORSIDE}
+                      className="absolute inset-0 h-full w-full brightness-[0.88] contrast-[1.02] saturate-[0.95]"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                  <a
+                    href={SITE.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={HERO_MENY_CTA_KLASSE_KART_NEDRE}
+                  >
+                    <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+                    Åpne i Google Maps
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      <section
         aria-label="Menykategorier — hurtigvalg"
-        className={`space-y-2 px-4 py-3 md:space-y-2.5 md:px-8 md:py-4 ${synkMenyBakgrunn ? "bg-transparent" : "bg-background"}`}
+        className={`space-y-2 px-4 pb-3 pt-1 md:space-y-2.5 md:px-8 md:pb-4 md:pt-1.5 ${synkMenyBakgrunn ? "bg-transparent" : "bg-background"}`}
       >
         <div className="flex flex-col gap-2 md:gap-2.5">
-          {LV_MENU.map((item) => (
-            <HurtigvalgSplitKort key={item.key} item={item} />
-          ))}
+          <ScrollReveal y={20} delay={0}>
+            <HurtigvalgMenyKort item={LV_MENU[0]} variant="featured" />
+          </ScrollReveal>
+          <div className="grid grid-cols-2 gap-2 md:gap-2.5">
+            <ScrollReveal y={18} delay={0.06}>
+              <HurtigvalgMenyKort item={LV_MENU[1]} variant="half" />
+            </ScrollReveal>
+            <ScrollReveal y={18} delay={0.1}>
+              <HurtigvalgMenyKort item={LV_MENU[2]} variant="half" />
+            </ScrollReveal>
+          </div>
+          <ScrollReveal y={20} delay={0.08}>
+            <HurtigvalgMenyKort item={HURTIGVALG_BIFF_BANNER} variant="featured" />
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* Våre favoritter — horisontale firkantede kort */}
-      <section className="border-t border-accent/10 px-4 pb-4 pt-6 md:px-8" aria-label="Våre favoritter">
-        <p
-          className="mb-3 inline-block -rotate-1 px-2 font-display text-xl font-bold uppercase tracking-[0.06em] text-[#e4d9c8] [transform:translateZ(0)] md:mb-4 md:text-2xl"
-          style={{
-            textShadow: `
-              0 1px 0 rgba(255,255,255,0.05),
-              0 3px 0 rgba(0,0,0,0.55),
-              1px 1px 0 rgba(62,42,28,0.5),
-              2px 2px 0 rgba(0,0,0,0.72),
-              3px 3px 0 rgba(90,62,40,0.32),
-              0 6px 14px rgba(0,0,0,0.45)
-            `,
-          }}
+      {/* Våre favoritter — horisontale firkantede kort (kort i full bredde mot skjermkant) */}
+      <section className="border-t border-[#b58952]/35 pb-4 pt-6" aria-label="Våre favoritter">
+        <ScrollReveal className="mb-3 px-4 md:mb-4 md:px-8" y={10} delay={0}>
+          <p
+            className="inline-block px-1 font-display text-xl font-semibold uppercase tracking-[0.08em] text-[#f2ebe3] [transform:translateZ(0)] md:text-2xl"
+            style={{
+              textShadow: `
+                0 1px 0 rgba(255,255,255,0.04),
+                0 2px 6px rgba(0,0,0,0.35)
+              `,
+            }}
+          >
+            Våre favoritter
+          </p>
+        </ScrollReveal>
+        <ScrollReveal
+          className="no-scrollbar flex touch-pan-x gap-3 overflow-x-auto pb-1 ps-[max(0px,env(safe-area-inset-left))] pe-[max(0px,env(safe-area-inset-right))]"
+          y={18}
+          delay={0.05}
         >
-          Våre favoritter
-        </p>
-        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
           {LV_MENU.map((c) =>
             c.key === "burger" ? (
               <Link
                 key={`fav-${c.key}`}
                 href={c.menyHref}
-                aria-label="Bacon cheese — se burgermeny"
+                aria-label="Touch — se hovedretter i menyen"
                 className={FAVORITT_KORT_LENKE_KLASSE}
               >
-                <FavorittMenyKort {...FAVORITT_BACON_CHEESE} />
+                <FavorittMenyKort {...FAVORITT_TOUCH} />
               </Link>
             ) : c.key === "kebab" ? (
               <Link
-                key={`fav-${c.key}-verneplikten`}
+                key={`fav-${c.key}-meatlover`}
                 href="/meny#pizza"
-                aria-label="Vernerplikten pizza — se pizzameny"
+                aria-label="Meatlover pizza — se pizzameny"
                 className={FAVORITT_KORT_LENKE_KLASSE}
               >
-                <FavorittMenyKort {...FAVORITT_VERNEPLIKTEN} />
+                <FavorittMenyKort {...FAVORITT_MEATLOVER} />
               </Link>
             ) : (
               <Link
@@ -383,46 +594,48 @@ export function Hero({ synkMenyBakgrunn = false }: { synkMenyBakgrunn?: boolean 
             <FavorittMenyKort {...FAVORITT_JUICY_LUCY} />
           </Link>
           <Link
-            key="fav-kebabmix-tallerken"
-            href="/meny#kebab"
-            aria-label="Kebabmix tallerken — se kebabmeny"
-            className={FAVORITT_KORT_LENKE_KLASSE}
-          >
-            <FavorittMenyKort {...FAVORITT_KEBABMIX_TALLERKEN} />
-          </Link>
-          <Link
-            key="fav-tacoburger"
+            key="fav-all-in-beef"
             href="/meny#hovedretter"
-            aria-label="Tacoburger — se burgere i menyen"
+            aria-label="All in beef — se burgere i menyen"
             className={FAVORITT_KORT_LENKE_KLASSE}
           >
-            <FavorittMenyKort {...FAVORITT_TACOBURGER} />
+            <FavorittMenyKort {...FAVORITT_ALL_IN_BEEF} />
           </Link>
           <Link
-            key="fav-belgisk-vaffel"
-            href="/meny#smaretter"
-            aria-label="Belgisk vaffel med is — se dessert i menyen"
+            key="fav-biffsnadder"
+            href="/meny#snadder"
+            aria-label="Biffsnadder — se snadder i menyen"
             className={FAVORITT_KORT_LENKE_KLASSE}
           >
-            <FavorittMenyKort {...FAVORITT_BELGISK_VAFFEL} />
+            <FavorittMenyKort {...FAVORITT_BIFFSNADDER} />
           </Link>
-        </div>
+          <Link
+            key="fav-meksisnadder"
+            href="/meny#snadder"
+            aria-label="Meksikansk biffsnadder — se snadder i menyen"
+            className={FAVORITT_KORT_LENKE_KLASSE}
+          >
+            <FavorittMenyKort {...FAVORITT_MEKSISNADDER} />
+          </Link>
+        </ScrollReveal>
       </section>
 
-      <div className="mx-auto max-w-md px-5 pb-8 pt-2 md:px-8">
-        <Link
-          href="/meny"
-          aria-label="Se hele menyen"
-          className="flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-accent bg-accent px-6 py-3 text-ink shadow-none transition hover:brightness-105 active:scale-[0.99]"
-        >
-          <span className="flex min-w-0 items-center gap-2">
-            <BookOpen className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
-            <span className="min-w-0 truncate text-xs font-bold uppercase tracking-wide text-ink">
-              Se hele menyen
+      <div className="pb-8 pt-2">
+        <ScrollReveal className="mx-auto max-w-md px-5 md:px-8" y={14} delay={0.04}>
+          <Link
+            href="/meny"
+            aria-label="Se hele menyen"
+            className="flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-accent bg-accent px-6 py-3 text-ink shadow-none transition hover:brightness-105 active:scale-[0.99]"
+          >
+            <span className="flex min-w-0 items-center gap-2">
+              <BookOpen className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
+              <span className="min-w-0 truncate text-xs font-bold uppercase tracking-wide text-ink">
+                Se hele menyen
+              </span>
             </span>
-          </span>
-          <ChevronRight className="h-5 w-5 shrink-0 text-ink" aria-hidden />
-        </Link>
+            <ChevronRight className="h-5 w-5 shrink-0 text-ink" aria-hidden />
+          </Link>
+        </ScrollReveal>
       </div>
     </header>
   );

@@ -201,18 +201,19 @@ export const FORSIDE_TYPO_LAYOUT_PRESETS: ForsideTypoLayoutPreset[] = [
 
 /**
  * Forside Hero (tekstkolonne): variant **nr. 2** «Oswald midt», skalert til ekte skjerm.
- * Ring/Kart-knappene bruker egne klasser i `Hero.tsx` og skal ikke endres herfra.
+ * «Se vår meny» ligger i `Hero.tsx`; secondaryknapper er fjernet derfra.
  */
 export const FORSIDE_HERO_VARIANT_2 = {
   column:
-    "flex flex-col items-center justify-center gap-2 px-6 py-8 text-center md:gap-2.5 lg:gap-3 lg:px-12 lg:py-10",
+    "flex flex-col items-center justify-center gap-0 px-5 py-1.5 text-center md:py-2 lg:px-10 lg:py-2.5",
   tag: "font-display text-[13px] font-semibold uppercase tracking-[0.24em] text-[#eccfa4] md:text-[15px] lg:text-[17px] [text-shadow:0_0_16px_rgba(236,200,150,0.45),0_0_32px_rgba(184,137,61,0.35),0_1px_3px_rgba(0,0,0,0.55)]",
   title:
     "font-display max-w-[98%] text-balance text-[clamp(2.35rem,9vw,4.75rem)] font-bold uppercase leading-[1.01] tracking-[0.055em] text-[#ece7df] md:max-w-5xl md:text-[clamp(2.85rem,8vw,5.35rem)] lg:text-[clamp(3.15rem,7.25vw,6rem)]",
-  divider: "mx-auto my-4 h-px w-full max-w-xs bg-accent/30",
+  divider: "mx-auto my-0.5 h-px w-full max-w-[14rem] bg-accent/25",
   body: "max-w-2xl text-lg leading-snug text-[#c9bfb4] md:text-xl md:leading-snug lg:max-w-3xl lg:text-2xl lg:leading-snug",
   ratingRow:
     "flex flex-wrap items-center justify-center gap-2.5 text-lg md:text-xl lg:text-2xl",
   reviewMuted: "text-[#c9bfb4]/85",
-  buttonsRow: "mt-5 flex flex-wrap justify-center gap-3",
+  buttonsWrap: "mt-2 flex w-full max-w-[24rem] flex-col gap-2",
+  buttonsRow: "flex w-full gap-2",
 } as const;

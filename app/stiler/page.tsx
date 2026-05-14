@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { STIL_TEMPLATES } from "@/lib/stiler-templates";
+import { INTERNAL_PREVIEW_ROBOTS } from "@/lib/seo-internal";
 
 export const metadata: Metadata = {
   title: "Velg stil — Bjerkvik Grill",
   description:
     "Tjue ulike uttrykk for samme sted: velg én vi kan bygge videre på.",
+  robots: INTERNAL_PREVIEW_ROBOTS,
 };
 
 export default function StilerHubPage() {

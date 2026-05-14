@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { LvMenuCoverImage } from "@/components/LvMenuCoverImage";
 import { SITE } from "@/lib/constants";

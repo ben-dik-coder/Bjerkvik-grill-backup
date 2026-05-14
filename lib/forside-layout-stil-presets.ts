@@ -183,7 +183,7 @@ export const FORSIDE_LAYOUT_STILER: ForsideLayoutStil[] = [
   merge({
     name: "6 · Cinematic",
     blurb: "Nesten svart, tynn gull, dramatisk foto.",
-    root: "bg-[#12100e] text-[#e8e2da]",
+    root: "bg-[#181614] text-[#ebe6df]",
     headerRow:
       "flex items-center justify-between gap-2 border-b border-white/5 bg-black px-3 py-2.5",
     menuBtn:

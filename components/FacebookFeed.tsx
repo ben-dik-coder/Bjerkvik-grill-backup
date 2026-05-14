@@ -1,8 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { IMG, SITE } from "@/lib/constants";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { FACEBOOK_FEED_IMAGES, SITE } from "@/lib/constants";
+import {
+  ScrollReveal,
+  SCROLL_VIEWPORT,
+  scrollRevealTransition,
+} from "@/components/ScrollReveal";
 
 function FacebookGlyph({ className }: { className?: string }) {
   return (
@@ -12,45 +19,125 @@ function FacebookGlyph({ className }: { className?: string }) {
   );
 }
 
-const shots = [IMG.ig1, IMG.ig2, IMG.ig3, IMG.ig4] as const;
+const shots = FACEBOOK_FEED_IMAGES;
 
 export function FacebookFeed() {
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (lightboxSrc == null) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxSrc(null);
+    };
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [lightboxSrc]);
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-6 md:px-8">
-      <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
-        Finn oss på Facebook
-      </h2>
-      <div className="no-scrollbar -mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:px-0">
+      <ScrollReveal y={12} delay={0}>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">
+          Finn oss på Facebook
+        </h2>
+      </ScrollReveal>
+      <ScrollReveal className="-mx-4 mt-4 md:mx-0" y={18} delay={0.03}>
+        <div className="no-scrollbar flex touch-pan-x gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:px-0">
         {shots.map((src, i) => (
           <motion.div
             key={src}
-            initial={{ opacity: 0, scale: 0.96 }}
+            initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
-            className="relative aspect-square w-[26vw] shrink-0 overflow-hidden rounded-2xl ring-1 ring-white/10 md:aspect-[4/5] md:w-auto"
+            viewport={SCROLL_VIEWPORT}
+            transition={scrollRevealTransition(i * 0.045)}
+            className="relative aspect-square w-[26vw] shrink-0 md:aspect-[4/5] md:w-auto"
           >
-            <Image
-              src={src}
-              alt=""
-              fill
-              className="object-cover object-center"
-              sizes="(max-width: 768px) 26vw, 25vw"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            <button
+              type="button"
+              onClick={() => setLightboxSrc(src)}
+              className="group relative block h-full w-full overflow-hidden rounded-2xl ring-1 ring-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent active:brightness-110"
+              aria-label="Åpne bilde i fullskjerm"
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                className="object-cover object-center transition group-hover:scale-[1.03]"
+                sizes="(max-width: 768px) 26vw, 25vw"
+              />
+              <span
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent transition group-hover:from-black/25"
+                aria-hidden
+              />
+            </button>
           </motion.div>
         ))}
-      </div>
-      <motion.a
-        href={SITE.facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        whileTap={{ scale: 0.99 }}
-        className="mt-4 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
-      >
-        <FacebookGlyph className="h-4 w-4" />
-        {SITE.facebookLabel}
-      </motion.a>
+        </div>
+      </ScrollReveal>
+
+      <AnimatePresence>
+        {lightboxSrc != null ? (
+          <motion.div
+            key="fb-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Bilde i fullskjerm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/93 p-[max(0.75rem,env(safe-area-inset-left))] pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,env(safe-area-inset-top))] pe-[max(0.75rem,env(safe-area-inset-right))] ps-[max(0.75rem,env(safe-area-inset-left))]"
+            onClick={() => setLightboxSrc(null)}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxSrc(null)}
+              className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-[2] flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/25 backdrop-blur-sm transition hover:bg-white/25"
+              aria-label="Lukk"
+            >
+              <X className="h-6 w-6" strokeWidth={2} />
+            </button>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ duration: 0.22 }}
+              className="relative mx-auto flex max-h-full max-w-full items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={lightboxSrc}
+                alt=""
+                width={1920}
+                height={1440}
+                className="max-h-[calc(100dvh-6rem-env(safe-area-inset-bottom)-env(safe-area-inset-top))] max-w-[calc(100vw-1.75rem-env(safe-area-inset-left)-env(safe-area-inset-right))] h-auto w-auto object-contain"
+                sizes="100vw"
+                priority
+              />
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <ScrollReveal y={14} delay={0.06}>
+        <motion.a
+          href={SITE.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          whileTap={{ scale: 0.99 }}
+          className="mt-4 flex w-full min-h-[52px] items-center justify-center gap-2 rounded-3xl border border-accent/60 bg-black/35 py-3 text-sm font-bold uppercase tracking-wide text-accent transition hover:bg-accent/10"
+        >
+          <FacebookGlyph className="h-4 w-4" />
+          {SITE.facebookLabel}
+        </motion.a>
+      </ScrollReveal>
     </section>
   );
 }

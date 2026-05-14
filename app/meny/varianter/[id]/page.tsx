@@ -20,12 +20,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Meny · Plakat (samme som /meny) · Bjerkvik Grill",
       description: "Identisk med den vanlige meny-siden — mørk plakat, grain og innhold.",
+      robots: { index: false, follow: false },
     };
   }
   const navn = MENY_VIS_TEMA_NAVN[n - 1] ?? `Stil ${n}`;
   return {
     title: `Meny · ${navn} · Bjerkvik Grill`,
-    description: `Menyen i stilen «${navn}» — forhåndsvisning.`,
+    description: `Forhåndsvisning — stilen «${navn}». Si fra om du vil bruke den på /meny.`,
+    robots: { index: false, follow: false },
   };
 }
 

@@ -5,6 +5,7 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -23,6 +24,8 @@ export default {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         card: ["var(--font-card)", "system-ui", "sans-serif"],
+        bebas: ["var(--font-bebas)", "Impact", "system-ui", "sans-serif"],
+        "geist-mono": ["var(--font-geist-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
         card: "0 8px 28px rgba(45, 30, 22, 0.38)",
